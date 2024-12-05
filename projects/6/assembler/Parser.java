@@ -20,13 +20,16 @@ public class Parser {
     }
 
     private String[] readFile(BufferedReader reader) throws IOException{
-        // reads all lines from a buffered reader to an array and strips whitespace
+        // reads all lines from a buffered reader to an array
+        // ignores comments, strips white space, and ignores blank lines
         List<String> lines = new ArrayList<String>();
         String line = null;
 
         while ((line = reader.readLine()) != null) {
             line = line.replaceAll("\\s+","");
-            lines.add(line);
+            if (!line.isEmpty() && !line.startsWith("//")) {
+                lines.add(line);
+            }
         }
 
         // convert array list of lines to an array
@@ -44,7 +47,7 @@ public class Parser {
         commandIndex++;
     }
 
-    public String currentCommand() {
+    private String currentCommand() {
         return commands[commandIndex];
     }
 
@@ -78,7 +81,7 @@ public class Parser {
         if (currentCommand().contains("=")) {
             return currentCommand().split("=")[0];
         } else {
-            return "";
+            return "null";
         }
     }
 
@@ -103,7 +106,7 @@ public class Parser {
         if (currentCommand().contains(";")) {
             return currentCommand().split("[;]")[1];
         } else {
-            return "";
+            return "null";
         }
     }
 }
