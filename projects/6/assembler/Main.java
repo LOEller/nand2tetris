@@ -9,10 +9,16 @@ public class Main {
       String inputFile = args[0];
       Parser parser = new Parser(inputFile);
 
-      while (true) {
+      while (parser.hasMoreCommands()) {
          parser.advance();
-         if (parser.finished()) break;
-         System.out.println(parser.currentCommand + ',' + parser.commandType());
+         System.out.println(parser.currentCommand());
+         if (parser.commandType() == CommandType.C_COMMAND) {
+            System.out.println("Dest: " + parser.dest());
+            System.out.println("Comp: " + parser.comp());
+            System.out.println("Jump: " + parser.jump());
+         } else {
+            System.out.println("Symbol: " + parser.symbol());
+         }
       }
    }
 }
