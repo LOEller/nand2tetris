@@ -54,6 +54,10 @@
     D=D-A
     @INPUT
     D;JLT // go back to INPUT if R1 < SCREEN (screen is clear)
+    @KBD
+    D=M
+    @FILL
+    D;JNE // if the keyboard input has started go right to FILL
     @1
     A=M 
     M=0 // clear the next pixel
