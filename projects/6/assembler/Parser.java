@@ -10,13 +10,14 @@ import java.util.List;
 
 public class Parser {
     String[] commands;
-    int commandIndex = -1;
+    int commandIndex;
 
     public Parser(String fileName) throws FileNotFoundException, IOException {
         // opens the file stream and gets ready to parse it
         BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
         commands = readFile(bufferedReader);
         bufferedReader.close();
+        reset();
     }
 
     private String[] readFile(BufferedReader reader) throws IOException{
@@ -36,7 +37,7 @@ public class Parser {
         return lines.toArray(new String[lines.size()]);
     }
 
-    public Boolean hasMoreCommands() {
+    public boolean hasMoreCommands() {
         return commandIndex < commands.length - 1;
     }
 
@@ -45,6 +46,10 @@ public class Parser {
         // command. Should only be called if hasMoreCommands is true.
         // Initially there is no current command
         commandIndex++;
+    }
+
+    public void reset() {
+        commandIndex = -1;
     }
 
     private String currentCommand() {
