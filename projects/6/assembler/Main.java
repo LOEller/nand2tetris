@@ -9,7 +9,7 @@ public class Main {
       String inputFile = args[0];
       Parser parser = new Parser(inputFile);
 
-      // First pass fill the symbol table with all the program labels
+      // First pass fills the symbol table with all the program labels
       SymbolTable symbolTable = new SymbolTable();
       int addressCounter = 0;
 
