@@ -7,13 +7,13 @@ tools/
 *.out
 *.tst
 *.vm
+*.html
 
 projects/0
 projects/1
 projects/2
 projects/3
 projects/5
-projects/8
 projects/9
 projects/10
 projects/11
