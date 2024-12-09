@@ -19,28 +19,26 @@ public class CodeWriter {
         // informs the code writer that the translation of a 
         // new VM file is started
         vmFileName = fileName;
+        writeInit();
     }
 
-    private void incrementStackPointer() throws IOException {
-        writer.write("@SP\n");
-        writer.write("M=M+1\n"); 
+    public void writeInit() {
+        // writes assembly code that affects the VM initialization
+        // code that must be placed at the beginning of an output file
     }
 
-    private void decrementStackPointer() throws IOException {
-        writer.write("@SP\n");
-        writer.write("M=M-1\n"); 
+    public void writeLabel(String label) {
+
     }
 
-    private void loadStackPointer() throws IOException {
-        writer.write("@SP\n");
-        writer.write("A=M\n");
+    public void writeGoto(String label) {
+
     }
 
-    private void loadTopOfStackIntoD() throws IOException {
-        loadStackPointer();
-        writer.write("D=M\n");
-    }
+    public void writeIf(String label) {
 
+    }
+    
     public void writeArithmetic(String command) throws IOException {
         // writes the assembly code that is the translation of
         // the given arithmetic command
@@ -238,6 +236,26 @@ public class CodeWriter {
             writer.write("A=M\n");
             writer.write("M=D\n"); // write val in D to address pointed by R13
         }
+    }
+
+    private void incrementStackPointer() throws IOException {
+        writer.write("@SP\n");
+        writer.write("M=M+1\n"); 
+    }
+
+    private void decrementStackPointer() throws IOException {
+        writer.write("@SP\n");
+        writer.write("M=M-1\n"); 
+    }
+
+    private void loadStackPointer() throws IOException {
+        writer.write("@SP\n");
+        writer.write("A=M\n");
+    }
+
+    private void loadTopOfStackIntoD() throws IOException {
+        loadStackPointer();
+        writer.write("D=M\n");
     }
 
     public void close() throws IOException {

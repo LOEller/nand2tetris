@@ -16,7 +16,16 @@ public class Main {
 
             if (parser.commandType() == CommandType.C_ARITHMETIC) {
                 codeWriter.writeArithmetic(parser.command());
-            } else if (parser.commandType() == CommandType.C_PUSH || parser.commandType() == CommandType.C_POP) {
+            } else if (parser.commandType() == CommandType.C_LABEL) {
+                codeWriter.writeLabel(parser.arg1());
+            } else if (parser.commandType() == CommandType.C_GOTO) {
+                codeWriter.writeGoto(parser.arg1());
+            } else if (parser.commandType() == CommandType.C_IF) {
+                codeWriter.writeIf(parser.arg1());
+            } else if (
+                parser.commandType() == CommandType.C_PUSH || 
+                parser.commandType() == CommandType.C_POP
+            ) {
                 codeWriter.writePushPop(
                     parser.commandType(),
                     parser.arg1(), 
