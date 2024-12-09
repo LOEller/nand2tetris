@@ -44,6 +44,9 @@ public class CodeWriter {
 
         // Notes: True is -1, False, is 0. Writing "@-1" causes really weird errors
 
+        // "lt" does not mean "top of stack" < "second from top of stack"
+        // it means "second from top of stack" < "top of stack"
+
         if (command.equals("add")) {
             // adds the values on top of stack and puts result on top of stack
             decrementStackPointer();
@@ -58,7 +61,7 @@ public class CodeWriter {
             loadTopOfStackIntoD();
             decrementStackPointer();
             loadStackPointer();
-            writer.write("M=D-M\n"); 
+            writer.write("M=M-D\n"); 
             incrementStackPointer(); 
         } else if (command.equals("and")) {
             // computes bitwise and of values on top of stack and puts 
