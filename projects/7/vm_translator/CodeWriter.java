@@ -7,15 +7,18 @@ import java.io.IOException;
 public class CodeWriter {
     FileWriter writer;
     int lCommandCounter = 1; // used for generating unique labels
+    String vmFileName;
 
     public CodeWriter(String outputFile) throws IOException {
         // opens the outpit file and gets ready to write to it
         writer = new FileWriter(outputFile);
+        setFileName(outputFile.split("\\.")[0]);
     }
 
     public void setFileName(String fileName) {
         // informs the code writer that the translation of a 
         // new VM file is started
+        vmFileName = fileName;
     }
 
     private void incrementStackPointer() throws IOException {
@@ -208,6 +211,9 @@ public class CodeWriter {
             writer.write("D=A\n");
             writer.write("@3\n");
             writer.write("D=D+A\n");
+        } else if (segment.equals("static")) {
+            writer.write(String.format("@%s.%d\n", vmFileName, index));
+            writer.write("D=A\n");
         } 
 
         if (command == CommandType.C_PUSH) {
