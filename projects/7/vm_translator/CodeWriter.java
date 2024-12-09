@@ -2,10 +2,11 @@ package vm_translator;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Random;
+
 
 public class CodeWriter {
     FileWriter writer;
+    int lCommandCounter = 1; // used for generating unique labels
 
     public CodeWriter(String outputFile) throws IOException {
         // opens the outpit file and gets ready to write to it
@@ -17,167 +18,144 @@ public class CodeWriter {
         // new VM file is started
     }
 
+    private void incrementStackPointer() throws IOException {
+        writer.write("@SP\n");
+        writer.write("M=M+1\n"); 
+    }
+
+    private void decrementStackPointer() throws IOException {
+        writer.write("@SP\n");
+        writer.write("M=M-1\n"); 
+    }
+
+    public void loadStackPointer() throws IOException {
+        writer.write("@SP\n");
+        writer.write("A=M\n");
+    }
+
+    public void loadTopOfStackIntoD() throws IOException {
+        loadStackPointer();
+        writer.write("D=M\n");
+    }
+
     public void writeArithmetic(String command) throws IOException {
         // writes the assembly code that is the translation of
         // the given arithmetic command
 
-        // true is -1
-        // false is 0
+        // Notes: True is -1, False, is 0. Writing "@-1" causes really weird errors
 
         if (command.equals("add")) {
             // adds the values on top of stack and puts result on top of stack
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
-            writer.write("D=M\n");
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
+            decrementStackPointer();
+            loadTopOfStackIntoD();
+            decrementStackPointer();
+            loadStackPointer();
             writer.write("M=D+M\n"); 
-            writer.write("@SP\n");
-            writer.write("M=M+1\n"); 
+            incrementStackPointer(); 
         } else if (command.equals("sub")) {
             // subtracts the values on top of stack and puts result on top of stack
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
-            writer.write("D=M\n");
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
+            decrementStackPointer();
+            loadTopOfStackIntoD();
+            decrementStackPointer();
+            loadStackPointer();
             writer.write("M=D-M\n"); 
-            writer.write("@SP\n");
-            writer.write("M=M+1\n"); 
+            incrementStackPointer(); 
         } else if (command.equals("and")) {
-            // computes bitwise and of values on top of stack and put result on stack
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
-            writer.write("D=M\n");
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
+            // computes bitwise and of values on top of stack and puts 
+            // result on top of stack
+            decrementStackPointer();
+            loadTopOfStackIntoD();
+            decrementStackPointer();
+            loadStackPointer();
             writer.write("M=D&M\n"); 
-            writer.write("@SP\n");
-            writer.write("M=M+1\n");
+            incrementStackPointer(); 
         } else if (command.equals("or")) {
-            // computes bitwise or of values on top of stack and put result on stack
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
-            writer.write("D=M\n");
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
+            // computes bitwise or of values on top of stack and puts 
+            // result on top of stack 
+            decrementStackPointer();
+            loadTopOfStackIntoD();
+            decrementStackPointer();
+            loadStackPointer();
             writer.write("M=D|M\n"); 
-            writer.write("@SP\n");
-            writer.write("M=M+1\n");
+            incrementStackPointer(); 
         } else if (command.equals("not")) {
             // computes bitwise not of value on top of stack and puts result on stack
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
+            decrementStackPointer();
+            loadStackPointer();
             writer.write("M=!M\n");
-            writer.write("@SP\n");
-            writer.write("M=M+1\n");
+            incrementStackPointer(); 
         } else if (command.equals("neg")) {
             // computes arithmetic negation of value on top of stack and puts result on stack
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
+            decrementStackPointer();
+            loadStackPointer();
             writer.write("M=-M\n");
-            writer.write("@SP\n");
-            writer.write("M=M+1\n");
+            incrementStackPointer(); 
         } else if (command.equals("eq")) {
             // compares values on top of stack and puts true on top of stack
             // if they are equal else false
-            String label = getNewLabel();
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
-            writer.write("D=M\n"); // put first val into D
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
-            writer.write("D=M-D\n"); // D = first val - second val
-            writer.write("@" + label + "\n");
+            decrementStackPointer();
+            loadTopOfStackIntoD();
+            decrementStackPointer();
+            loadStackPointer();
+            writer.write("D=M-D\n"); 
+            writer.write("@IF_" + lCommandCounter + "\n");
             writer.write("D;JEQ\n");
-            // if they are NOT equal write 0 into M
-            writer.write("@0\n");
-            writer.write("D=A\n");
-            writer.write("@SP\n");
-            writer.write("A=M\n");
-            writer.write("M=D\n");
-            writer.write("(" + label + ")\n");
-            // they are equal so write true
-            writer.write("@-1\n");
-            writer.write("D=A\n");
-            writer.write("@SP\n");
-            writer.write("A=M\n");
-            writer.write("M=D\n");
-            // increment stack pointer
-            writer.write("@SP\n");
-            writer.write("M=M+1\n");
+            // it is not equal so write false
+            loadStackPointer();
+            writer.write("M=0\n");
+            writer.write("@ELSE_" + lCommandCounter + "\n");
+            writer.write("0;JMP\n");
+            writer.write("(IF_" + lCommandCounter + ")\n");
+            // it is equal so write true
+            loadStackPointer();
+            writer.write("M=-1\n");
+            writer.write("(ELSE_" + lCommandCounter + ")\n");
+            incrementStackPointer(); 
+            lCommandCounter++;
         } else if (command.equals("lt")) {
             // puts true on top of stack if first val is less than second val
             // else false
-            String label = getNewLabel();
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
-            writer.write("D=M\n"); // put first val into D
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
-            writer.write("D=M-D\n"); // D = first val - second val
-            writer.write("@" + label + "\n");
+            decrementStackPointer();
+            loadTopOfStackIntoD();
+            decrementStackPointer();
+            loadStackPointer();
+            writer.write("D=M-D\n"); 
+            writer.write("@IF_" + lCommandCounter + "\n");
             writer.write("D;JLT\n");
             // it is not less than so write false
-            writer.write("@0\n");
-            writer.write("D=A\n");
-            writer.write("@SP\n");
-            writer.write("A=M\n");
-            writer.write("M=D\n");
-            writer.write("(" + label + ")\n");
+            loadStackPointer();
+            writer.write("M=0\n");
+            writer.write("@ELSE_" + lCommandCounter + "\n");
+            writer.write("0;JMP\n");
+            writer.write("(IF_" + lCommandCounter + ")\n");
             // it is less than so write true
-            writer.write("@-1\n");
-            writer.write("D=A\n");
-            writer.write("@SP\n");
-            writer.write("A=M\n");
-            writer.write("M=D\n");
-            // increment stack pointer
-            writer.write("@SP\n");
-            writer.write("M=M+1\n");
+            loadStackPointer();
+            writer.write("M=-1\n");
+            writer.write("(ELSE_" + lCommandCounter + ")\n");
+            incrementStackPointer(); 
+            lCommandCounter++;
         } else if (command.equals("gt")) {
             // puts true on top of stack if first val is greater than second val
             // else false
-            String label = getNewLabel();
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
-            writer.write("D=M\n"); // put first val into D
-            writer.write("@SP\n");
-            writer.write("M=M-1\n"); 
-            writer.write("A=M\n");
-            writer.write("D=M-D\n"); // D = first val - second val
-            writer.write("@" + label + "\n");
+            decrementStackPointer();
+            loadTopOfStackIntoD();
+            decrementStackPointer();
+            loadStackPointer();
+            writer.write("D=M-D\n"); 
+            writer.write("@IF_" + lCommandCounter + "\n");
             writer.write("D;JGT\n");
             // it is not greater than so write false
-            writer.write("@0\n");
-            writer.write("D=A\n");
-            writer.write("@SP\n");
-            writer.write("A=M\n");
-            writer.write("M=D\n");
-            writer.write("(" + label + ")\n");
+            loadStackPointer();
+            writer.write("M=0\n");
+            writer.write("@ELSE_" + lCommandCounter + "\n");
+            writer.write("0;JMP\n");
+            writer.write("(IF_" + lCommandCounter + ")\n");
             // it is greater than so write true
-            writer.write("@-1\n");
-            writer.write("D=A\n");
-            writer.write("@SP\n");
-            writer.write("A=M\n");
-            writer.write("M=D\n");
-            // increment stack pointer
-            writer.write("@SP\n");
-            writer.write("M=M+1\n");
+            loadStackPointer();
+            writer.write("M=-1\n");
+            writer.write("(ELSE_" + lCommandCounter + ")\n");
+            incrementStackPointer(); 
+            lCommandCounter++;
         }
     }
 
@@ -195,20 +173,6 @@ public class CodeWriter {
             writer.write("@SP\n");
             writer.write("M=M+1\n");
         }
-    }
-
-    private String getNewLabel() {
-        // used for generating random labels in assembly instructions
-        String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        StringBuilder builder = new StringBuilder();
-        Random rnd = new Random();
-        while (builder.length() < 10) { // length of the random string.
-            int index = (int) (rnd.nextFloat() * CHARS.length());
-            builder.append(CHARS.charAt(index));
-        }
-        String result = builder.toString();
-        return result;
-
     }
 
     public void close() throws IOException {
