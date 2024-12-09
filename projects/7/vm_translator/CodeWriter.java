@@ -28,12 +28,12 @@ public class CodeWriter {
         writer.write("M=M-1\n"); 
     }
 
-    public void loadStackPointer() throws IOException {
+    private void loadStackPointer() throws IOException {
         writer.write("@SP\n");
         writer.write("A=M\n");
     }
 
-    public void loadTopOfStackIntoD() throws IOException {
+    private void loadTopOfStackIntoD() throws IOException {
         loadStackPointer();
         writer.write("D=M\n");
     }

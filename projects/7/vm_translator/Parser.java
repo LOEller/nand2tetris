@@ -7,21 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// push constant 7 should become:
-//    write the value 7 to the stack (ie location pointed to by SP)
-//    increment SP (the value stored in R0)
-
-// push constant 8 should become:
-//    write the value 8 to the stack (ie location pointed to by SP)
-//    increment SP (the value stored in R0)
-
-// add should become:
-    // subtract 1 from the SP
-    // put the value at top of stack into D
-    // subtract 1 from the SP
-    // put D + top of stack value into top of stack
-    // increment SP
-
 
 public class Parser {
     String[] commands;
