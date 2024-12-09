@@ -166,15 +166,70 @@ public class CodeWriter {
         // writes the assembly code that is the translation of the 
         // given command, where command is either C_PUSH or C_POP
 
-        if (command == CommandType.C_PUSH) {
-            // pushes a constant index on to the stack
+        if (segment.equals("constant")) {
+            // put index value into D
             writer.write(String.format("@%d\n", index));
             writer.write("D=A\n");
-            writer.write("@SP\n");
-            writer.write("A=M\n");
+        } else if (segment.equals("local")) {
+            // put value at LCL + index into D
+            writer.write(String.format("@%d\n", index));
+            writer.write("D=A\n");
+            writer.write("@LCL\n");
+            writer.write("D=D+M\n");
+        } else if (segment.equals("argument")) {
+            // put value at ARG + index into D
+            writer.write(String.format("@%d\n", index));
+            writer.write("D=A\n");
+            writer.write("@ARG\n");
+            writer.write("D=D+M\n");
+        } else if (segment.equals("this")) {
+            // put value at THIS + index into D
+            writer.write(String.format("@%d\n", index));
+            writer.write("D=A\n");
+            writer.write("@THIS\n");
+            writer.write("D=D+M\n");
+        } else if (segment.equals("that")) {
+            // put value at THAT + index into D
+            writer.write(String.format("@%d\n", index));
+            writer.write("D=A\n");
+            writer.write("@THAT\n");
+            writer.write("D=D+M\n");
+        } else if (segment.equals("temp")) {
+            // put value at 5 + index into D
+            writer.write(String.format("@%d\n", index));
+            writer.write("D=A\n");
+            writer.write("@5\n");
+            writer.write("D=D+A\n");
+        } 
+        // else if (segment.equals("pointer")) {
+        //     // put value at 3 + index into D
+        //     writer.write(String.format("@%d\n", index));
+        //     writer.write("D=A\n");
+        //     writer.write("@3\n");
+        //     writer.write("D=D+A\n");
+        // } 
+
+        if (command == CommandType.C_PUSH) {
+            if (!segment.equals("constant")) {
+                // if the segment was NOT constant then D is an address
+                // not the literal value
+                writer.write("A=D\n");
+                writer.write("D=M\n"); 
+            }
+            loadStackPointer();
             writer.write("M=D\n");
-            writer.write("@SP\n");
-            writer.write("M=M+1\n");
+            incrementStackPointer();
+        } else if (command == CommandType.C_POP) {
+            // pops off top of stack and puts it into location
+            // specified by D
+            writer.write("@13\n");
+            writer.write("M=D\n"); // store D address in R13
+            decrementStackPointer();
+            loadStackPointer();
+            writer.write("D=M\n"); // store top of stack val in D
+            writer.write("@13\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n"); // write val in D to address pointed by R13
         }
     }
 
