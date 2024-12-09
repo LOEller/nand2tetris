@@ -166,6 +166,8 @@ public class CodeWriter {
         // writes the assembly code that is the translation of the 
         // given command, where command is either C_PUSH or C_POP
 
+        // load into D either the constant index 
+        // or the address of the new value 
         if (segment.equals("constant")) {
             // put index value into D
             writer.write(String.format("@%d\n", index));
@@ -200,14 +202,13 @@ public class CodeWriter {
             writer.write("D=A\n");
             writer.write("@5\n");
             writer.write("D=D+A\n");
+        } else if (segment.equals("pointer")) {
+            // put value at 3 + index into D
+            writer.write(String.format("@%d\n", index));
+            writer.write("D=A\n");
+            writer.write("@3\n");
+            writer.write("D=D+A\n");
         } 
-        // else if (segment.equals("pointer")) {
-        //     // put value at 3 + index into D
-        //     writer.write(String.format("@%d\n", index));
-        //     writer.write("D=A\n");
-        //     writer.write("@3\n");
-        //     writer.write("D=D+A\n");
-        // } 
 
         if (command == CommandType.C_PUSH) {
             if (!segment.equals("constant")) {
