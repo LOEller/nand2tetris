@@ -76,7 +76,7 @@ public class Parser {
                 return CommandType.C_ARITHMETIC;
             case "sub":
                 return CommandType.C_ARITHMETIC;
-            case "neq":
+            case "neg":
                 return CommandType.C_ARITHMETIC;
             case "eq":
                 return CommandType.C_ARITHMETIC;

@@ -2,6 +2,7 @@ package vm_translator;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Random;
 
 public class CodeWriter {
     FileWriter writer;
@@ -23,7 +24,7 @@ public class CodeWriter {
         // true is -1
         // false is 0
 
-        if (command == "add") {
+        if (command.equals("add")) {
             // adds the values on top of stack and puts result on top of stack
             writer.write("@SP\n");
             writer.write("M=M-1\n"); 
@@ -35,7 +36,7 @@ public class CodeWriter {
             writer.write("M=D+M\n"); 
             writer.write("@SP\n");
             writer.write("M=M+1\n"); 
-        } else if (command == "sub") {
+        } else if (command.equals("sub")) {
             // subtracts the values on top of stack and puts result on top of stack
             writer.write("@SP\n");
             writer.write("M=M-1\n"); 
@@ -47,7 +48,7 @@ public class CodeWriter {
             writer.write("M=D-M\n"); 
             writer.write("@SP\n");
             writer.write("M=M+1\n"); 
-        } else if (command == "and") {
+        } else if (command.equals("and")) {
             // computes bitwise and of values on top of stack and put result on stack
             writer.write("@SP\n");
             writer.write("M=M-1\n"); 
@@ -59,7 +60,7 @@ public class CodeWriter {
             writer.write("M=D&M\n"); 
             writer.write("@SP\n");
             writer.write("M=M+1\n");
-        } else if (command == "or") {
+        } else if (command.equals("or")) {
             // computes bitwise or of values on top of stack and put result on stack
             writer.write("@SP\n");
             writer.write("M=M-1\n"); 
@@ -71,7 +72,7 @@ public class CodeWriter {
             writer.write("M=D|M\n"); 
             writer.write("@SP\n");
             writer.write("M=M+1\n");
-        } else if (command == "not") {
+        } else if (command.equals("not")) {
             // computes bitwise not of value on top of stack and puts result on stack
             writer.write("@SP\n");
             writer.write("M=M-1\n"); 
@@ -79,7 +80,7 @@ public class CodeWriter {
             writer.write("M=!M\n");
             writer.write("@SP\n");
             writer.write("M=M+1\n");
-        } else if (command == "neg") {
+        } else if (command.equals("neg")) {
             // computes arithmetic negation of value on top of stack and puts result on stack
             writer.write("@SP\n");
             writer.write("M=M-1\n"); 
@@ -87,9 +88,10 @@ public class CodeWriter {
             writer.write("M=-M\n");
             writer.write("@SP\n");
             writer.write("M=M+1\n");
-        } else if (command == "eq") {
+        } else if (command.equals("eq")) {
             // compares values on top of stack and puts true on top of stack
-            // if they are equal
+            // if they are equal else false
+            String label = getNewLabel();
             writer.write("@SP\n");
             writer.write("M=M-1\n"); 
             writer.write("A=M\n");
@@ -97,9 +99,83 @@ public class CodeWriter {
             writer.write("@SP\n");
             writer.write("M=M-1\n"); 
             writer.write("A=M\n");
-            writer.write("M=M-D\n"); // put diff into M
-            writer.write("M=!M\n"); // negate
-            // now the value in M is 0 if they are NOT equal
+            writer.write("D=M-D\n"); // D = first val - second val
+            writer.write("@" + label + "\n");
+            writer.write("D;JEQ\n");
+            // if they are NOT equal write 0 into M
+            writer.write("@0\n");
+            writer.write("D=A\n");
+            writer.write("@SP\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+            writer.write("(" + label + ")\n");
+            // they are equal so write true
+            writer.write("@-1\n");
+            writer.write("D=A\n");
+            writer.write("@SP\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+            // increment stack pointer
+            writer.write("@SP\n");
+            writer.write("M=M+1\n");
+        } else if (command.equals("lt")) {
+            // puts true on top of stack if first val is less than second val
+            // else false
+            String label = getNewLabel();
+            writer.write("@SP\n");
+            writer.write("M=M-1\n"); 
+            writer.write("A=M\n");
+            writer.write("D=M\n"); // put first val into D
+            writer.write("@SP\n");
+            writer.write("M=M-1\n"); 
+            writer.write("A=M\n");
+            writer.write("D=M-D\n"); // D = first val - second val
+            writer.write("@" + label + "\n");
+            writer.write("D;JLT\n");
+            // it is not less than so write false
+            writer.write("@0\n");
+            writer.write("D=A\n");
+            writer.write("@SP\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+            writer.write("(" + label + ")\n");
+            // it is less than so write true
+            writer.write("@-1\n");
+            writer.write("D=A\n");
+            writer.write("@SP\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+            // increment stack pointer
+            writer.write("@SP\n");
+            writer.write("M=M+1\n");
+        } else if (command.equals("gt")) {
+            // puts true on top of stack if first val is greater than second val
+            // else false
+            String label = getNewLabel();
+            writer.write("@SP\n");
+            writer.write("M=M-1\n"); 
+            writer.write("A=M\n");
+            writer.write("D=M\n"); // put first val into D
+            writer.write("@SP\n");
+            writer.write("M=M-1\n"); 
+            writer.write("A=M\n");
+            writer.write("D=M-D\n"); // D = first val - second val
+            writer.write("@" + label + "\n");
+            writer.write("D;JGT\n");
+            // it is not greater than so write false
+            writer.write("@0\n");
+            writer.write("D=A\n");
+            writer.write("@SP\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+            writer.write("(" + label + ")\n");
+            // it is greater than so write true
+            writer.write("@-1\n");
+            writer.write("D=A\n");
+            writer.write("@SP\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+            // increment stack pointer
             writer.write("@SP\n");
             writer.write("M=M+1\n");
         }
@@ -119,6 +195,20 @@ public class CodeWriter {
             writer.write("@SP\n");
             writer.write("M=M+1\n");
         }
+    }
+
+    private String getNewLabel() {
+        // used for generating random labels in assembly instructions
+        String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        StringBuilder builder = new StringBuilder();
+        Random rnd = new Random();
+        while (builder.length() < 10) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * CHARS.length());
+            builder.append(CHARS.charAt(index));
+        }
+        String result = builder.toString();
+        return result;
+
     }
 
     public void close() throws IOException {
