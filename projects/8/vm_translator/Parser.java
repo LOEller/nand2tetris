@@ -60,6 +60,12 @@ public class Parser {
                 return CommandType.C_GOTO;
             case "if-goto":
                 return CommandType.C_IF;
+            case "function":
+                return CommandType.C_FUNCTION;
+            case "return":
+                return CommandType.C_RETURN;
+            case "call":
+                return CommandType.C_CALL;
             case "add":
                 return CommandType.C_ARITHMETIC;
             case "sub":

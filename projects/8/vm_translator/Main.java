@@ -22,6 +22,12 @@ public class Main {
                 codeWriter.writeGoto(parser.arg1());
             } else if (parser.commandType() == CommandType.C_IF) {
                 codeWriter.writeIf(parser.arg1());
+            } else if (parser.commandType() == CommandType.C_FUNCTION) {
+                codeWriter.writeFunction(parser.arg1(), parser.arg2());
+            } else if (parser.commandType() == CommandType.C_RETURN) {
+                codeWriter.writeReturn();
+            } else if (parser.commandType() == CommandType.C_CALL) {
+                codeWriter.writeCall(parser.arg1(), parser.arg2());
             } else if (
                 parser.commandType() == CommandType.C_PUSH || 
                 parser.commandType() == CommandType.C_POP

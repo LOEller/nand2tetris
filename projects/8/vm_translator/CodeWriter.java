@@ -52,6 +52,18 @@ public class CodeWriter {
         writer.write(String.format("@%s\n", label));
         writer.write("D;JNE\n");
     }
+
+    public void writeCall(String functionName, int numArgs) throws IOException {
+        // todo
+    }
+
+    public void writeReturn() throws IOException {
+        // todo
+    }
+
+    public void writeFunction(String functionName, int numLocals) throws IOException {
+        // todo
+    }
     
     public void writeArithmetic(String command) throws IOException {
         // writes the assembly code that is the translation of
