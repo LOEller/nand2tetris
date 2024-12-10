@@ -5,9 +5,11 @@ import java.io.IOException;
 
 
 public class CodeWriter {
-    FileWriter writer;
-    int lCommandCounter = 1; // used for generating unique labels
-    String vmFileName;
+    private FileWriter writer;
+    private String vmFileName;
+    // used for generating unique labels
+    private int lCommandCounter = 1; 
+    private int returnAddressCounter = 1;
 
     public CodeWriter(String outputFile) throws IOException {
         // opens the outpit file and gets ready to write to it
@@ -38,7 +40,6 @@ public class CodeWriter {
 
         // call Sys.init
         writeCall("Sys.init", 0);
-        // this has no arguments right??
     }
 
     public void writeLabel(String label) throws IOException {
@@ -64,7 +65,9 @@ public class CodeWriter {
         // and push the arguments necessary for the function being called
 
         // create a unique label for this function's return address
-        String returnAddressLabel = String.format("%s-return-address", functionName);
+        String returnAddressLabel = String.format(
+            "%s-return-%d", functionName, returnAddressCounter
+        );
 
         // push return-address
         writer.write(String.format("@%s\n", returnAddressLabel));
@@ -103,6 +106,8 @@ public class CodeWriter {
 
         // write label for the return address
         writeLabel(returnAddressLabel);
+
+        returnAddressCounter++;
     }
 
     public void writeReturn() throws IOException {
