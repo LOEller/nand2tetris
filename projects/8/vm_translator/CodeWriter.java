@@ -27,7 +27,6 @@ public class CodeWriter {
         // code that must be placed at the beginning of an output file
     }
 
-    // TODO use these functions to refactor write arithmetic etc
     public void writeLabel(String label) throws IOException {
         writer.write(String.format("(%s)\n", label));
     }
@@ -119,11 +118,11 @@ public class CodeWriter {
             writer.write("M=0\n");
             writer.write("@ELSE_" + lCommandCounter + "\n");
             writer.write("0;JMP\n");
-            writer.write("(IF_" + lCommandCounter + ")\n");
+            writeLabel("IF_" + lCommandCounter);
             // it is equal so write true
             loadStackPointer();
             writer.write("M=-1\n");
-            writer.write("(ELSE_" + lCommandCounter + ")\n");
+            writeLabel("ELSE_" + lCommandCounter);
             incrementStackPointer(); 
             lCommandCounter++;
         } else if (command.equals("lt")) {
@@ -141,11 +140,11 @@ public class CodeWriter {
             writer.write("M=0\n");
             writer.write("@ELSE_" + lCommandCounter + "\n");
             writer.write("0;JMP\n");
-            writer.write("(IF_" + lCommandCounter + ")\n");
+            writeLabel("IF_" + lCommandCounter);
             // it is less than so write true
             loadStackPointer();
             writer.write("M=-1\n");
-            writer.write("(ELSE_" + lCommandCounter + ")\n");
+            writeLabel("ELSE_" + lCommandCounter);
             incrementStackPointer(); 
             lCommandCounter++;
         } else if (command.equals("gt")) {
@@ -163,11 +162,11 @@ public class CodeWriter {
             writer.write("M=0\n");
             writer.write("@ELSE_" + lCommandCounter + "\n");
             writer.write("0;JMP\n");
-            writer.write("(IF_" + lCommandCounter + ")\n");
+            writeLabel("IF_" + lCommandCounter);
             // it is greater than so write true
             loadStackPointer();
             writer.write("M=-1\n");
-            writer.write("(ELSE_" + lCommandCounter + ")\n");
+            writeLabel("ELSE_" + lCommandCounter);
             incrementStackPointer(); 
             lCommandCounter++;
         }
