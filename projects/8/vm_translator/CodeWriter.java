@@ -27,16 +27,26 @@ public class CodeWriter {
         // code that must be placed at the beginning of an output file
     }
 
-    public void writeLabel(String label) {
-
+    // TODO use these functions to refactor write arithmetic etc
+    public void writeLabel(String label) throws IOException {
+        writer.write(String.format("(%s)\n", label));
     }
 
-    public void writeGoto(String label) {
-
+    public void writeGoto(String label) throws IOException {
+        writer.write(String.format("@%s\n", label));
+        writer.write("0;JMP\n");
     }
 
-    public void writeIf(String label) {
-
+    public void writeIf(String label) throws IOException {
+        // the stack's topmost value is popped
+        // if the value is not 0, execution continues
+        // from the location marked by label
+        // otherwise execution continues from the next
+        // command in the program
+        decrementStackPointer();
+        loadTopOfStackIntoD();
+        writer.write(String.format("@%s\n", label));
+        writer.write("D;JNE\n");
     }
     
     public void writeArithmetic(String command) throws IOException {

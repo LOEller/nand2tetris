@@ -27,7 +27,8 @@ public class Parser {
 
         while ((line = reader.readLine()) != null) {
             if (!line.isEmpty() && !line.startsWith("//")) {
-                lines.add(line);
+                // strip any leading whitespace
+                lines.add(line.trim());
             }
         }
 
