@@ -15,12 +15,6 @@ public class CodeWriter {
         // opens the outpit file and gets ready to write to it
         writer = new FileWriter(outputFile);
         writeInit();
-
-        // NOTE: simple function is still working which means my 
-        // function calling code is probably right and the return code
-        // is maybe right.
-
-        // therefore the issue is most likely happening in my writeCall method
     }
 
     public void close() throws IOException {
@@ -82,22 +76,22 @@ public class CodeWriter {
 
         // push LCL
         writer.write("@LCL\n");
-        writer.write("D=A\n");
+        writer.write("D=M\n");
         pushD();
 
         // push ARG
         writer.write("@ARG\n");
-        writer.write("D=A\n");
+        writer.write("D=M\n");
         pushD();
 
         // push THIS
         writer.write("@THIS\n");
-        writer.write("D=A\n");
+        writer.write("D=M\n");
         pushD();
 
         // push THAT
         writer.write("@THAT\n");
-        writer.write("D=A\n");
+        writer.write("D=M\n");
         pushD();
 
         // ARG = SP-n-5 
@@ -265,6 +259,9 @@ public class CodeWriter {
             loadStackPointer();
             writer.write("M=-M\n");
             incrementStackPointer(); 
+
+        // TODO these can be simplified to only have a single label and jump
+
         } else if (command.equals("eq")) {
             // compares values on top of stack and puts true on top of stack
             // if they are equal else false
@@ -394,6 +391,10 @@ public class CodeWriter {
         } else if (command == CommandType.C_POP) {
             // pops off top of stack and puts it into location
             // specified by D
+
+            // R13 - R15 are general purpose registers for the VM implementation
+            // using R13 for temporary variable
+
             writer.write("@13\n");
             writer.write("M=D\n"); // store D address in R13
             decrementStackPointer();
