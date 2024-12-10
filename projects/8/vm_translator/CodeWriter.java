@@ -15,6 +15,11 @@ public class CodeWriter {
         setFileName(outputFile.split("\\.")[0]);
     }
 
+    public void close() throws IOException {
+        // closes the output file
+        writer.close();
+    }
+
     public void setFileName(String fileName) {
         // informs the code writer that the translation of a 
         // new VM file is started
@@ -111,7 +116,7 @@ public class CodeWriter {
             decrementStackPointer();
             loadStackPointer();
             writer.write("D=M-D\n"); 
-            writer.write("@IF_" + lCommandCounter + "\n");
+            writer.write(String.format("@%s\n", "IF_" + lCommandCounter));
             writer.write("D;JEQ\n");
             // it is not equal so write false
             loadStackPointer();
@@ -132,7 +137,7 @@ public class CodeWriter {
             decrementStackPointer();
             loadStackPointer();
             writer.write("D=M-D\n"); 
-            writer.write("@IF_" + lCommandCounter + "\n");
+            writer.write(String.format("@%s\n", "IF_" + lCommandCounter));
             writer.write("D;JLT\n");
             // it is not less than so write false
             loadStackPointer();
@@ -153,7 +158,7 @@ public class CodeWriter {
             decrementStackPointer();
             loadStackPointer();
             writer.write("D=M-D\n"); 
-            writer.write("@IF_" + lCommandCounter + "\n");
+            writer.write(String.format("@%s\n", "IF_" + lCommandCounter));
             writer.write("D;JGT\n");
             // it is not greater than so write false
             loadStackPointer();
@@ -221,6 +226,7 @@ public class CodeWriter {
         } 
 
         if (command == CommandType.C_PUSH) {
+            // pushes value specified by D to top of stack
             if (!segment.equals("constant")) {
                 // if the segment was NOT constant then D is an address
                 // not the literal value
@@ -244,6 +250,8 @@ public class CodeWriter {
         }
     }
 
+    // below are convenience methods used internally by CoderWriter
+
     private void incrementStackPointer() throws IOException {
         writer.write("@SP\n");
         writer.write("M=M+1\n"); 
@@ -262,10 +270,5 @@ public class CodeWriter {
     private void loadTopOfStackIntoD() throws IOException {
         loadStackPointer();
         writer.write("D=M\n");
-    }
-
-    public void close() throws IOException {
-        // closes the output file
-        writer.close();
     }
 }
