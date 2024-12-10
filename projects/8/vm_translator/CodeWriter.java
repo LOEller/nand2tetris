@@ -13,7 +13,7 @@ public class CodeWriter {
         // opens the outpit file and gets ready to write to it
         writer = new FileWriter(outputFile);
         setFileName(outputFile.split("\\.")[0]);
-        writeInit();
+        //writeInit();
     }
 
     public void close() throws IOException {
