@@ -13,6 +13,7 @@ public class CodeWriter {
         // opens the outpit file and gets ready to write to it
         writer = new FileWriter(outputFile);
         setFileName(outputFile.split("\\.")[0]);
+        writeInit();
     }
 
     public void close() throws IOException {
@@ -23,13 +24,23 @@ public class CodeWriter {
     public void setFileName(String fileName) {
         // informs the code writer that the translation of a 
         // new VM file is started
+
+        // multiple vm files are translated into
+        // a single assembly output file
         vmFileName = fileName;
-        writeInit();
     }
 
-    public void writeInit() {
+    public void writeInit() throws IOException {
         // writes assembly code that affects the VM initialization
         // code that must be placed at the beginning of an output file
+
+        // set stack pointer to 256
+        writer.write("@256\n");
+        writer.write("D=A\n");
+        writer.write("@SP\n");
+        writer.write("M=D\n");
+
+        // TODO call Sys.init
     }
 
     public void writeLabel(String label) throws IOException {
@@ -54,15 +65,54 @@ public class CodeWriter {
     }
 
     public void writeCall(String functionName, int numArgs) throws IOException {
-        // todo
+        // call needs to save the state of the current function on the stack
+        // and push the arguments necessary for the function being called
+
+        // push return-address
+        // push LCL
+        // push ARG
+        // push THIS
+        // push THAT
+        // ARG = SP-n-5 
+        // LCL = SP
+
+        // goto f
+        writeGoto(functionName);
+
+        // write a unique label for the return address
+        writeLabel(String.format("%s-return-address", functionName));
     }
 
     public void writeReturn() throws IOException {
-        // todo
+        // return needs to restore the saved state of the calling function
+        // and jump back to the return address
+
+        // R13 - R15 are general purpose registers for the VM implementation
+        // using R14 for FRAME and R15 for RET
+
+        // FRAME = LCL
+        writer.write("@LCL\n");
+        writer.write("D=M\n");
+        writer.write("@14\n");
+        writer.write("M=D\n"); // put LCL val into R14
+        
+        // RET = *(FRAME-5)
+        // *ARG = pop()
+        // SP = ARG + 1
+        // THAT = *(FRAME-1)
+        // THIS = *(FRAME-2)
+        // ARG = *(FRAME-3)
+        // LCL = *(FRAME-4)
+        // goto RET
     }
 
     public void writeFunction(String functionName, int numLocals) throws IOException {
-        // todo
+        // declare a label for the function entry
+        writeLabel(functionName);
+        // push 0 onto the stack numLocals times
+        for (int i = 0; i < numLocals; i++) {
+            writePushPop(CommandType.C_PUSH, "constant", 0);
+        }
     }
     
     public void writeArithmetic(String command) throws IOException {
