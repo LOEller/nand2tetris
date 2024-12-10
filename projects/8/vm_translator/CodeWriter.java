@@ -53,11 +53,8 @@ public class CodeWriter {
     }
 
     public void writeIf(String label) throws IOException {
-        // the stack's topmost value is popped
-        // if the value is not 0, execution continues
-        // from the location marked by label
-        // otherwise execution continues from the next
-        // command in the program
+        // pop top of stack. if it is NOT 0 got to label
+        // else continue with next instruction
         decrementStackPointer();
         loadTopOfStackIntoD();
         writer.write(String.format("@%s\n", label));
@@ -68,19 +65,46 @@ public class CodeWriter {
         // call needs to save the state of the current function on the stack
         // and push the arguments necessary for the function being called
 
+        // create a unique label for this function's return address
+        String returnAddressLabel = String.format("%s-return-address", functionName);
+
         // push return-address
+        writer.write(String.format("@%s\n", returnAddressLabel));
+        writer.write("D=A\n");
+        loadStackPointer();
+        writer.write("M=D\n");
+        incrementStackPointer();
+
         // push LCL
+        writePushPop(CommandType.C_PUSH, "local", 0);
         // push ARG
+        writePushPop(CommandType.C_PUSH, "argument", 0);
         // push THIS
+        writePushPop(CommandType.C_PUSH, "this", 0);
         // push THAT
+        writePushPop(CommandType.C_PUSH, "that", 0);
+
         // ARG = SP-n-5 
+        writer.write("@SP\n");
+        writer.write("D=M\n");
+        writer.write(String.format("@%d\n", numArgs));
+        writer.write("D=D-A\n");
+        writer.write("@5\n");
+        writer.write("D=D-A\n");
+        writer.write("@ARG\n");
+        writer.write("M=D\n");
+
         // LCL = SP
+        writer.write("@SP\n");
+        writer.write("D=M\n");
+        writer.write("@LCL\n");
+        writer.write("M=D\n"); 
 
         // goto f
         writeGoto(functionName);
 
-        // write a unique label for the return address
-        writeLabel(String.format("%s-return-address", functionName));
+        // write label for the return address
+        writeLabel(returnAddressLabel);
     }
 
     public void writeReturn() throws IOException {
@@ -95,7 +119,7 @@ public class CodeWriter {
         writer.write("D=M\n");
         writer.write("@14\n");
         writer.write("M=D\n"); // put LCL val into R14
-        
+
         // RET = *(FRAME-5)
         // *ARG = pop()
         // SP = ARG + 1
