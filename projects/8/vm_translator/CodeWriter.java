@@ -259,9 +259,6 @@ public class CodeWriter {
             loadStackPointer();
             writer.write("M=-M\n");
             incrementStackPointer(); 
-
-        // TODO these can be simplified to only have a single label and jump
-
         } else if (command.equals("eq")) {
             // compares values on top of stack and puts true on top of stack
             // if they are equal else false
