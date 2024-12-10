@@ -12,8 +12,7 @@ public class CodeWriter {
     public CodeWriter(String outputFile) throws IOException {
         // opens the outpit file and gets ready to write to it
         writer = new FileWriter(outputFile);
-        setFileName(outputFile.split("\\.")[0]);
-        //writeInit();
+        writeInit();
     }
 
     public void close() throws IOException {
@@ -24,9 +23,6 @@ public class CodeWriter {
     public void setFileName(String fileName) {
         // informs the code writer that the translation of a 
         // new VM file is started
-
-        // multiple vm files are translated into
-        // a single assembly output file
         vmFileName = fileName;
     }
 
