@@ -15,6 +15,12 @@ public class CodeWriter {
         // opens the outpit file and gets ready to write to it
         writer = new FileWriter(outputFile);
         writeInit();
+
+        // NOTE: simple function is still working which means my 
+        // function calling code is probably right and the return code
+        // is maybe right.
+
+        // therefore the issue is most likely happening in my writeCall method
     }
 
     public void close() throws IOException {
@@ -72,26 +78,33 @@ public class CodeWriter {
         // push return-address
         writer.write(String.format("@%s\n", returnAddressLabel));
         writer.write("D=A\n");
-        loadStackPointer();
-        writer.write("M=D\n");
-        incrementStackPointer();
+        pushD();
 
         // push LCL
-        writePushPop(CommandType.C_PUSH, "local", 0);
+        writer.write("@LCL\n");
+        writer.write("D=A\n");
+        pushD();
+
         // push ARG
-        writePushPop(CommandType.C_PUSH, "argument", 0);
+        writer.write("@ARG\n");
+        writer.write("D=A\n");
+        pushD();
+
         // push THIS
-        writePushPop(CommandType.C_PUSH, "this", 0);
+        writer.write("@THIS\n");
+        writer.write("D=A\n");
+        pushD();
+
         // push THAT
-        writePushPop(CommandType.C_PUSH, "that", 0);
+        writer.write("@THAT\n");
+        writer.write("D=A\n");
+        pushD();
 
         // ARG = SP-n-5 
+        writer.write(String.format("@%d\n", numArgs+5));
+        writer.write("D=A\n");
         writer.write("@SP\n");
-        writer.write("D=M\n");
-        writer.write(String.format("@%d\n", numArgs));
-        writer.write("D=D-A\n");
-        writer.write("@5\n");
-        writer.write("D=D-A\n");
+        writer.write("D=M-D\n");
         writer.write("@ARG\n");
         writer.write("M=D\n");
 
@@ -377,9 +390,7 @@ public class CodeWriter {
                 writer.write("A=D\n");
                 writer.write("D=M\n"); 
             }
-            loadStackPointer();
-            writer.write("M=D\n");
-            incrementStackPointer();
+            pushD();
         } else if (command == CommandType.C_POP) {
             // pops off top of stack and puts it into location
             // specified by D
@@ -414,5 +425,12 @@ public class CodeWriter {
     private void loadTopOfStackIntoD() throws IOException {
         loadStackPointer();
         writer.write("D=M\n");
+    }
+
+    private void pushD() throws IOException {
+        // pushes the value in D onto the stack
+        loadStackPointer();
+        writer.write("M=D\n");
+        incrementStackPointer();
     }
 }
