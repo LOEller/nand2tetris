@@ -40,7 +40,9 @@ public class CodeWriter {
         writer.write("@SP\n");
         writer.write("M=D\n");
 
-        // TODO call Sys.init
+        // call Sys.init
+        writeCall("Sys.init", 0);
+        // this has no arguments right??
     }
 
     public void writeLabel(String label) throws IOException {
@@ -121,13 +123,68 @@ public class CodeWriter {
         writer.write("M=D\n"); // put LCL val into R14
 
         // RET = *(FRAME-5)
+        writer.write("@14\n");
+        writer.write("D=M\n");
+        writer.write("@5\n");
+        writer.write("D=D-A\n");
+        writer.write("A=D\n");
+        writer.write("D=M\n");
+        writer.write("@15\n");
+        writer.write("M=D\n"); // put val at FRAME-5 into R15
+
         // *ARG = pop()
+        writePushPop(CommandType.C_POP, "argument", 0);
+
         // SP = ARG + 1
+        writer.write("@ARG\n");
+        writer.write("D=M\n");
+        writer.write("D=D+1\n");
+        writer.write("@SP\n");
+        writer.write("M=D\n");
+
         // THAT = *(FRAME-1)
+        writer.write("@14\n");
+        writer.write("D=M\n");
+        writer.write("D=D-1\n");
+        writer.write("A=D\n");
+        writer.write("D=M\n");
+        writer.write("@THAT\n");
+        writer.write("M=D\n"); 
+
         // THIS = *(FRAME-2)
+        writer.write("@14\n");
+        writer.write("D=M\n");
+        writer.write("@2\n");
+        writer.write("D=D-A\n");
+        writer.write("A=D\n");
+        writer.write("D=M\n");
+        writer.write("@THIS\n");
+        writer.write("M=D\n"); 
+
         // ARG = *(FRAME-3)
+        writer.write("@14\n");
+        writer.write("D=M\n");
+        writer.write("@3\n");
+        writer.write("D=D-A\n");
+        writer.write("A=D\n");
+        writer.write("D=M\n");
+        writer.write("@ARG\n");
+        writer.write("M=D\n"); 
+
         // LCL = *(FRAME-4)
+        writer.write("@14\n");
+        writer.write("D=M\n");
+        writer.write("@4\n");
+        writer.write("D=D-A\n");
+        writer.write("A=D\n");
+        writer.write("D=M\n");
+        writer.write("@LCL\n");
+        writer.write("M=D\n"); 
+
         // goto RET
+        writer.write("@15\n");
+        writer.write("A=M\n");
+        writer.write("0;JMP\n");
     }
 
     public void writeFunction(String functionName, int numLocals) throws IOException {
