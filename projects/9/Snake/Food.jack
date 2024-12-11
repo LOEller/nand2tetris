@@ -1,0 +1,41 @@
+class Food {
+
+   field int x, y, size;
+
+   /** Constructs and draws a new square with a given location and size. */
+   constructor Food new(int ax, int ay) {
+      let x = ax;
+      let y = ay;
+      let size = 20;
+      do draw();
+      return this;
+   }
+
+   /** Disposes this square. */
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   /** Draws this square in its current (x,y) location */
+   method void draw() {
+      // Draws the square using the color black
+      do Screen.setColor(true);
+      do Screen.drawRectangle(x, y, x + size, y + size);
+      return;
+   }
+
+   /** Erases this square. */
+   method void erase() {
+      // Draws the square using the color white (background color)
+      do Screen.setColor(false);
+      do Screen.drawRectangle(x, y, x + size, y + size);
+      return;
+   }
+
+   method void move(int newx, newy) {
+      let x = newx;
+      let y = newy;
+      return;
+   }
+}

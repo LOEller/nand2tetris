@@ -1,0 +1,65 @@
+class SnakeGame {
+   field Snake snake; 
+   field Food food; 
+                    
+   constructor SnakeGame new() {
+      let snake = Snake.new();
+      let food = Food.new(40, 40);
+      return this;
+   }
+
+   method void dispose() {
+      do snake.dispose();
+      do food.dispose();
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   method boolean detectWallCollision(Snake snake) {
+     // TODO
+     return;
+   }
+
+   method boolean detectFoodCollision(Snake snake, Food food) {
+     // TODO
+     return;
+   }
+
+   /** Runs the game: handles the user's inputs and moves the snake accordingly */
+   method void run() {
+      var char key;  // the key currently pressed by the user
+      var boolean exit;
+      let exit = false;
+      
+      while (~exit) {
+         // update and draw the snake 
+         snake.eraseSegments();
+         snake.moveSegments();
+         snake.drawSegments();
+
+         // update head of snake's direction if input is given
+         if (key = 81)  { let exit = true; }                // q key
+         if (key = 131) { let snake.changeDirection(1); }   // up arrow
+         if (key = 133) { let snake.changeDirection(2); }   // down arrow
+         if (key = 130) { let snake.changeDirection(3); }   // left arrow
+         if (key = 132) { let snake.changeDirection(4); }   // right arrow
+
+         // detect collision with the wall 
+         if (detectWallCollision(snake)) {
+            let exit = true;
+         }
+
+        // detect collision with the food
+        if (detectFoodCollision(snake, food)) {
+            food.erase();
+            food.move(60, 60);
+            food.draw();
+            snake.addSegment();
+         }
+     } 
+     return;
+   }
+}
+
+
+

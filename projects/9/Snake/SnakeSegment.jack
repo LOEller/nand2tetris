@@ -1,0 +1,45 @@
+// Linked list node representing a single segment in the snake
+class SnakeSegment {
+
+   field int x, y, direction; 
+   field int size; 
+   field SnakeSegment next;
+
+   /** Constructs and draws a new square with a given location and size. */
+   constructor SnakeSegment new(int ax, int ay, int adirection) {
+      let x = ax;
+      let y = ay;
+      let direction = adirection;
+      let size = 20;
+      let next = null;
+      return this;
+   }
+
+   /** Disposes this snake segment and recursively all the ones after it. */
+   method void dispose() {
+      do Memory.deAlloc(this);
+      // TODO recursively dispose all snake segments, see example in List
+      return;
+   }
+
+   /** Draws this square in its current (x,y) location */
+   method void draw() {
+      // Draws the square using the color black
+      do Screen.setColor(true);
+      do Screen.drawRectangle(x, y, x + size, y + size);
+      return;
+   }
+
+   /** Erases this square. */
+   method void erase() {
+      // Draws the square using the color white (background color)
+      do Screen.setColor(false);
+      do Screen.drawRectangle(x, y, x + size, y + size);
+      return;
+   }
+
+   method void move(int direction) {
+      // TODO reposition x and y of this snake segment according to direction
+      return;
+   }
+}
