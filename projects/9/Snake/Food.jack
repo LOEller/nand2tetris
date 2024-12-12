@@ -6,7 +6,7 @@ class Food {
    constructor Food new(int ax, int ay) {
       let x = ax;
       let y = ay;
-      let size = 20;
+      let size = 10;
       do draw();
       return this;
    }

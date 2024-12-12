@@ -18,13 +18,13 @@ class SnakeGame {
    method boolean detectWallCollision(Snake snake) {
      // returns True if head of snake has collided with one of 
      // the walls and False otherwise
-     if (snake.getHeadLeftBound() < 0) {
+     if (snake.getHeadLeftBound() < 1) {
         return true;
      }
-     if (snake.getHeadLeftBound() > 510) {
+     if (snake.getHeadRightBound() > 510) {
         return true;
      } 
-     if (snake.getHeadTopBound() < 0) {
+     if (snake.getHeadTopBound() < 1) {
         return true;
      }
      if (snake.getHeadBottomBound() > 254) {
@@ -50,6 +50,8 @@ class SnakeGame {
          do snake.eraseSegments();
          do snake.moveSegments();
          do snake.drawSegments();
+
+         let key = Keyboard.keyPressed();
 
          // update head of snake's direction if input is given
          if (key = 81)  { let exit = true; }                // q key
