@@ -1,10 +1,12 @@
 class Snake {
 
    field SnakeSegment firstSegment;
+   field int frameCounter;
 
    constructor Snake new() {
       // create the head of the snake at (20, 20) moving down
       let firstSegment = SnakeSegment.new(20, 20, 2);
+      let frameCounter = 0;
       return this;
    }
 
@@ -33,6 +35,18 @@ class Snake {
 
    method int getBottomBound() {
     return firstSegment.getY() + firstSegment.getSize();
+   }
+
+   method void eraseMoveDraw() {
+     if (frameCounter = 40) {
+       do eraseSegments();
+       do moveSegments();
+       do drawSegments();
+       let frameCounter = 0;
+     } else {
+        let frameCounter = frameCounter + 1;
+     }
+     return;
    }
 
    // goes through the list of snake segments and calls 

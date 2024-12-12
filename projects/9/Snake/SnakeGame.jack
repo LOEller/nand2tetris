@@ -67,9 +67,7 @@ class SnakeGame {
       
       while (~exit) {
          // update and draw the snake 
-         do snake.eraseSegments();
-         do snake.moveSegments();
-         do snake.drawSegments();
+         do snake.eraseMoveDraw();
 
          let key = Keyboard.keyPressed();
 
