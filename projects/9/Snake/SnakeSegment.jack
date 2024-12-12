@@ -1,16 +1,25 @@
 // Linked list node representing a single segment in the snake
 class SnakeSegment {
 
-   field int x, y, direction, size; 
+   field int x, y, deltax, deltay, size; 
    field SnakeSegment next;
 
-   constructor SnakeSegment new(int ax, int ay, int adirection) {
+   constructor SnakeSegment new(int ax, int ay) {
       let x = ax;
       let y = ay;
-      let direction = adirection;
       let size = 10;
       let next = null;
       return this;
+   }
+
+   method void setDeltaX(int Adeltax) {
+     let deltax = Adeltax;
+     return;
+   }
+
+   method void setDeltaY(int Adeltay) {
+     let deltay = Adeltay;
+     return;
    }
 
    method int getX() {
@@ -52,31 +61,9 @@ class SnakeSegment {
       return;
    }
 
-   method void setDirection(int Adirection) {
-      let direction = Adirection;
-      return;
-   }
-
    method void move() {
-      if (direction = 1) {
-        // up
-        let y = y - 1;
-      } else {
-        if (direction = 2) {
-            // down
-            let y = y + 1;
-        } else {
-          if (direction = 3) {
-            // left
-            let x = x - 1;
-          } else {
-            if (direction = 4) {
-               // right
-               let x = x + 1;
-            }    
-          }
-        }  
-      }
+      let x = x + deltax;
+      let y = y + deltay;
       return;
    }
 }

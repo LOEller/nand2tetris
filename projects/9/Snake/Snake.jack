@@ -5,7 +5,8 @@ class Snake {
 
    constructor Snake new() {
       // create the head of the snake at (20, 20) moving down
-      let firstSegment = SnakeSegment.new(20, 20, 2);
+      let firstSegment = SnakeSegment.new(20, 20);
+      do setDirection(2);
       let frameCounter = 0;
       return this;
    }
@@ -17,7 +18,22 @@ class Snake {
    }
 
    method void setDirection(int direction) {
-     do firstSegment.setDirection(direction);
+    if (direction = 1) {
+      do firstSegment.setDeltaX(0);
+      do firstSegment.setDeltaY(-1);
+    }
+    if (direction = 2) {
+      do firstSegment.setDeltaX(0);
+      do firstSegment.setDeltaY(1);
+    }
+    if (direction = 3) {
+      do firstSegment.setDeltaX(-1);
+      do firstSegment.setDeltaY(0);
+    }
+    if (direction = 4) {
+      do firstSegment.setDeltaX(1);
+      do firstSegment.setDeltaY(0);
+    }
      return;
    }
 

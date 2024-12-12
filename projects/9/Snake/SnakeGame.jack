@@ -72,7 +72,7 @@ class SnakeGame {
          let key = Keyboard.keyPressed();
 
          // update head of snake's direction if input is given
-         if (key = 81)  { let exit = true; }                // q key
+         if (key = 81)  { let exit = true; }            // q key
          if (key = 131) { do snake.setDirection(1); }   // up arrow
          if (key = 133) { do snake.setDirection(2); }   // down arrow
          if (key = 130) { do snake.setDirection(3); }   // left arrow
