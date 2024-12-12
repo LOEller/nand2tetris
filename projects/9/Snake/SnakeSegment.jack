@@ -39,14 +39,14 @@ class SnakeSegment {
    }
 
    method void draw() {
-      // Draws the square using the color black
+      // Draws the segment using the color black
       do Screen.setColor(true);
       do Screen.drawRectangle(x, y, x + size, y + size);
       return;
    }
 
    method void erase() {
-      // Draws the square using the color white (background color)
+      // Draws the segment using the color white (background color)
       do Screen.setColor(false);
       do Screen.drawRectangle(x, y, x + size, y + size);
       return;

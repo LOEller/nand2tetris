@@ -4,7 +4,7 @@ class SnakeGame {
                     
    constructor SnakeGame new() {
       let snake = Snake.new();
-      let food = Food.new(100, 100);
+      let food = Food.new();
       return this;
    }
 
@@ -36,13 +36,10 @@ class SnakeGame {
    method boolean detectFoodCollision(Snake snake, Food food) {
      // returns True if the head of the snake has collided with 
      // the food and False otherwise
-
-     // if (RectA.Left < RectB.Right && RectA.Right > RectB.Left &&  RectA.Top > RectB.Bottom && RectA.Bottom < RectB.Top ) 
-
      if (snake.getLeftBound() < food.getRightBound()) {
         if (snake.getRightBound() > food.getLeftBound()) {
-            if (snake.getTopBound() > food.getBottomBound()) {
-                if (snake.getBottomBound() < food.getTopBound()) {
+            if (snake.getTopBound() < food.getBottomBound()) {
+                if (snake.getBottomBound() > food.getTopBound()) {
                     return true;
                 }
             }
@@ -80,8 +77,7 @@ class SnakeGame {
         // detect collision with the food
         if (detectFoodCollision(snake, food)) {
             do food.erase();
-            // TODO figure out how to make random numbers???
-            do food.move(200, 200);
+            do food.move();
             do food.draw();
             do snake.addSegment();
          }

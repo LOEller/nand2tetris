@@ -1,11 +1,13 @@
 class Food {
 
-   field int x, y, size;
+   field int x, y, size, count;
+   field Array xpos;
+   field Array ypos;
 
-   constructor Food new(int ax, int ay) {
-      let x = ax;
-      let y = ay;
+   constructor Food new() {
       let size = 10;
+      do initPosArray();
+      do move(); // sets inital x and y pos
       do draw();
       return this;
    }
@@ -32,23 +34,58 @@ class Food {
    }
 
    method void draw() {
-      // Draws the square using the color black
+      // White color black
       do Screen.setColor(true);
       do Screen.drawRectangle(x, y, x + size, y + size);
       return;
    }
 
-   /** Erases this square. */
    method void erase() {
-      // Draws the square using the color white (background color)
+      // Writes color white
       do Screen.setColor(false);
       do Screen.drawRectangle(x, y, x + size, y + size);
       return;
    }
 
-   method void move(int newx, int newy) {
-      let x = newx;
-      let y = newy;
+   method void move() {
+      // moves food to next pos in predetemined list to 
+      // simulate RNG
+      if (count < 9) {
+        let count = count + 1;
+      } else {
+        let count = 0;
+      }
+      let x = xpos[count];
+      let y = ypos[count];
       return;
+   }
+
+   method void initPosArray() {
+     let xpos = Array.new(10);
+     let ypos = Array.new(10);
+     let count = -1;
+
+     let xpos[0] = 399;
+     let xpos[1] = 47;
+     let xpos[2] = 408;
+     let xpos[3] = 174;
+     let xpos[4] = 96;
+     let xpos[5] = 242;
+     let xpos[6] = 56;
+     let xpos[7] = 262;
+     let xpos[8] = 469;
+     let xpos[9] = 339;
+
+     let ypos[0] = 113;
+     let ypos[1] = 212;
+     let ypos[2] = 196;
+     let ypos[3] = 198;
+     let ypos[4] = 117;
+     let ypos[5] = 122;
+     let ypos[6] = 192;
+     let ypos[7] = 220;
+     let ypos[8] = 111;
+     let ypos[9] = 146;
+     return;
    }
 }
