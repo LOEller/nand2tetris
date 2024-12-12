@@ -33,7 +33,7 @@ class Food {
       return;
    }
 
-   method void move(int newx, newy) {
+   method void move(int newx, int newy) {
       let x = newx;
       let y = newy;
       return;

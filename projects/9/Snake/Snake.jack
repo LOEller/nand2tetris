@@ -1,10 +1,10 @@
-// wrapper class for the linked list of snake segments
 class Snake {
 
    field SnakeSegment firstSegment;
 
    constructor Snake new() {
-      let firstSegment = SnakeSegment.new(20, 20, 1);
+      // create the head of the snake at (20, 20) moving down
+      let firstSegment = SnakeSegment.new(20, 20, 2);
       return this;
    }
 
@@ -14,30 +14,60 @@ class Snake {
       return;
    }
 
-   // changes the direction that the "head" of the snake is moving 
-   method void changeDirection(int direction) {
-      // TODO
-      return;
+   method void setDirection(int direction) {
+     do firstSegment.setDirection(direction);
+     return;
+   }
+
+   method int getHeadLeftBound() {
+    return firstSegment.getX();
+   }
+
+   method int getHeadRightBound() {
+    return firstSegment.getX() + firstSegment.getSize();
+   }
+
+   method int getHeadTopBound() {
+    return firstSegment.getY();
+   }
+
+   method int getHeadBottomBound() {
+    return firstSegment.getY() + firstSegment.getSize();
    }
 
    // goes through the list of snake segments and calls 
    // draw on each one
    method void drawSegments() {
-      // TODO
+      var SnakeSegment current;
+      let current = firstSegment;
+      while (~(current = null)) {
+        do current.draw();
+        let current = current.getNext();
+      }
       return;
    }
 
    // goes through the list of snake segments and calls 
    // erase on each one
    method void eraseSegments() {
-      // TODO
+      var SnakeSegment current;
+      let current = firstSegment;
+      while (~(current = null)) {
+        do current.erase();
+        let current = current.getNext();
+      }
       return;
    }
 
    // goes through the list of snake segments and updates their positions 
    // appropriately
    method void moveSegments() {
-      // TODO 
+      var SnakeSegment current;
+      let current = firstSegment;
+      while (~(current = null)) {
+        do current.move();
+        let current = current.getNext();
+      }
       return;
    }
 

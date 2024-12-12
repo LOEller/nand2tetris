@@ -4,7 +4,7 @@ class SnakeGame {
                     
    constructor SnakeGame new() {
       let snake = Snake.new();
-      let food = Food.new(40, 40);
+      let food = Food.new(100, 100);
       return this;
    }
 
@@ -16,13 +16,27 @@ class SnakeGame {
    }
 
    method boolean detectWallCollision(Snake snake) {
-     // TODO
-     return;
+     // returns True if head of snake has collided with one of 
+     // the walls and False otherwise
+     if (snake.getHeadLeftBound() < 0) {
+        return true;
+     }
+     if (snake.getHeadLeftBound() > 510) {
+        return true;
+     } 
+     if (snake.getHeadTopBound() < 0) {
+        return true;
+     }
+     if (snake.getHeadBottomBound() > 254) {
+        return true;
+     }
+     return false;
    }
 
    method boolean detectFoodCollision(Snake snake, Food food) {
-     // TODO
-     return;
+     // returns True if the head of the snake has collided with 
+     // the food and False otherwise
+     return false;
    }
 
    /** Runs the game: handles the user's inputs and moves the snake accordingly */
@@ -33,16 +47,16 @@ class SnakeGame {
       
       while (~exit) {
          // update and draw the snake 
-         snake.eraseSegments();
-         snake.moveSegments();
-         snake.drawSegments();
+         do snake.eraseSegments();
+         do snake.moveSegments();
+         do snake.drawSegments();
 
          // update head of snake's direction if input is given
          if (key = 81)  { let exit = true; }                // q key
-         if (key = 131) { let snake.changeDirection(1); }   // up arrow
-         if (key = 133) { let snake.changeDirection(2); }   // down arrow
-         if (key = 130) { let snake.changeDirection(3); }   // left arrow
-         if (key = 132) { let snake.changeDirection(4); }   // right arrow
+         if (key = 131) { do snake.setDirection(1); }   // up arrow
+         if (key = 133) { do snake.setDirection(2); }   // down arrow
+         if (key = 130) { do snake.setDirection(3); }   // left arrow
+         if (key = 132) { do snake.setDirection(4); }   // right arrow
 
          // detect collision with the wall 
          if (detectWallCollision(snake)) {
@@ -51,10 +65,11 @@ class SnakeGame {
 
         // detect collision with the food
         if (detectFoodCollision(snake, food)) {
-            food.erase();
-            food.move(60, 60);
-            food.draw();
-            snake.addSegment();
+            do food.erase();
+            // TODO figure out how to make random numbers???
+            do food.move(200, 200);
+            do food.draw();
+            do snake.addSegment();
          }
      } 
      return;
