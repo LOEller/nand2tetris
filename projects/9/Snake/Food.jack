@@ -2,7 +2,6 @@ class Food {
 
    field int x, y, size;
 
-   /** Constructs and draws a new square with a given location and size. */
    constructor Food new(int ax, int ay) {
       let x = ax;
       let y = ay;
@@ -11,13 +10,27 @@ class Food {
       return this;
    }
 
-   /** Disposes this square. */
    method void dispose() {
       do Memory.deAlloc(this);
       return;
    }
 
-   /** Draws this square in its current (x,y) location */
+    method int getLeftBound() {
+      return x;
+    }
+
+   method int getRightBound() {
+     return x + size;
+   }
+
+   method int getTopBound() {
+     return y;
+   }
+
+   method int getBottomBound() {
+     return y + size;
+   }
+
    method void draw() {
       // Draws the square using the color black
       do Screen.setColor(true);

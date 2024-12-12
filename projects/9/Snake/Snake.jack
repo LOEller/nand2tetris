@@ -19,19 +19,19 @@ class Snake {
      return;
    }
 
-   method int getHeadLeftBound() {
+   method int getLeftBound() {
     return firstSegment.getX();
    }
 
-   method int getHeadRightBound() {
+   method int getRightBound() {
     return firstSegment.getX() + firstSegment.getSize();
    }
 
-   method int getHeadTopBound() {
+   method int getTopBound() {
     return firstSegment.getY();
    }
 
-   method int getHeadBottomBound() {
+   method int getBottomBound() {
     return firstSegment.getY() + firstSegment.getSize();
    }
 
