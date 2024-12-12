@@ -1,10 +1,13 @@
 class SnakeGame {
    field Snake snake; 
    field Food food; 
+   field int score;
                     
    constructor SnakeGame new() {
       let snake = Snake.new();
       let food = Food.new();
+      let score = -1;
+      do updateScore();
       return this;
    }
 
@@ -48,6 +51,14 @@ class SnakeGame {
      return false;
    }
 
+   method void updateScore() {
+     let score = score + 1;
+     do Output.moveCursor(0, 0);
+     do Output.printString("Score: ");
+     do Output.printInt(score);
+     return;
+   }
+
    /** Runs the game: handles the user's inputs and moves the snake accordingly */
    method void run() {
       var char key;  // the key currently pressed by the user
@@ -80,6 +91,7 @@ class SnakeGame {
             do food.move();
             do food.draw();
             do snake.addSegment();
+            do updateScore();
          }
      } 
      return;
