@@ -12,6 +12,57 @@ class SnakeSegment {
       return this;
    }
 
+   /** Disposes this snake segment and recursively all the ones after it. */
+   method void dispose() {
+      if (~(next = null)) {
+        do next.dispose();
+      }
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   method void draw() {
+      // Draws the segment using the color black
+      do Screen.setColor(true);
+      do Screen.drawRectangle(x, y, x + size, y + size);
+      return;
+   }
+
+   method void erase() {
+      // Erases the segment using the color white (background color)
+      do Screen.setColor(false);
+      do Screen.drawRectangle(x, y, x + size, y + size);
+      return;
+   }
+
+   method void move() {
+      let x = x + deltax;
+      let y = y + deltay;
+      return;
+   }
+
+   method void setDirection(int direction) {
+    if (direction = 1) {
+      do setDeltaX(0);
+      do setDeltaY(-1);
+    }
+    if (direction = 2) {
+      do setDeltaX(0);
+      do setDeltaY(1);
+    }
+    if (direction = 3) {
+      do setDeltaX(-1);
+      do setDeltaY(0);
+    }
+    if (direction = 4) {
+      do setDeltaX(1);
+      do setDeltaY(0);
+    }
+     return;
+   }
+
+   /* Getters and Setters */
+
    method void setDeltaX(int Adeltax) {
      let deltax = Adeltax;
      return;
@@ -20,6 +71,14 @@ class SnakeSegment {
    method void setDeltaY(int Adeltay) {
      let deltay = Adeltay;
      return;
+   }
+
+   method int getDeltaX() {
+     return deltax;
+   }
+
+   method int getDeltaY() {
+     return deltay;
    }
 
    method int getX() {
@@ -34,36 +93,12 @@ class SnakeSegment {
     return size;
    }
 
-   /** Disposes this snake segment and recursively all the ones after it. */
-   method void dispose() {
-      if (~(next = null)) {
-        do next.dispose();
-      }
-      do Memory.deAlloc(this);
-      return;
-   }
-
    method SnakeSegment getNext() {
      return next;
    }
 
-   method void draw() {
-      // Draws the segment using the color black
-      do Screen.setColor(true);
-      do Screen.drawRectangle(x, y, x + size, y + size);
-      return;
-   }
-
-   method void erase() {
-      // Draws the segment using the color white (background color)
-      do Screen.setColor(false);
-      do Screen.drawRectangle(x, y, x + size, y + size);
-      return;
-   }
-
-   method void move() {
-      let x = x + deltax;
-      let y = y + deltay;
-      return;
+   method void setNext(SnakeSegment Anext) {
+     let next = Anext;
+     return;
    }
 }

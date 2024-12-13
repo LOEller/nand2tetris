@@ -17,23 +17,22 @@ class Snake {
       return;
    }
 
+   // Sets direction of the snake 
    method void setDirection(int direction) {
-    if (direction = 1) {
-      do firstSegment.setDeltaX(0);
-      do firstSegment.setDeltaY(-1);
-    }
-    if (direction = 2) {
-      do firstSegment.setDeltaX(0);
-      do firstSegment.setDeltaY(1);
-    }
-    if (direction = 3) {
-      do firstSegment.setDeltaX(-1);
-      do firstSegment.setDeltaY(0);
-    }
-    if (direction = 4) {
-      do firstSegment.setDeltaX(1);
-      do firstSegment.setDeltaY(0);
-    }
+     // the directiom of the first segment (head)
+     // should match whatever is input by the user
+     do firstSegment.setDirection(direction); 
+     return;
+   }
+
+   method void propagateDirection() {
+     // this method propagates the directions back along the 
+     // snake from its head to its tail
+
+     // will have to be called every time the erase-move-draw
+     // loop is called since the snake segments will need to 
+     // move directions even when the head of the snake is not
+     // changing direction
      return;
    }
 
@@ -57,6 +56,7 @@ class Snake {
      if (frameCounter = 40) {
        do eraseSegments();
        do moveSegments();
+       do propagateDirection();
        do drawSegments();
        let frameCounter = 0;
      } else {
@@ -103,7 +103,25 @@ class Snake {
 
    // adds a segment to this snake
    method void addSegment() {
-    // TODO
+    var SnakeSegment lastSegment; // last segment in the snake 
+    var SnakeSegment newSegment; // new segment to add 
+
+    let lastSegment = firstSegment;
+    while (~(lastSegment.getNext() = null)) {
+      let lastSegment = lastSegment.getNext();
+    }
+
+    // create a new segment moving the same direction as the last segment
+    // place it one segment-length behind the current tail in the opposite
+    // direction that the tail is currently moving
+    let newSegment = SnakeSegment.new(
+        lastSegment.getX() - (lastSegment.getSize()*lastSegment.getDeltaX()),
+        lastSegment.getY() - (lastSegment.getSize()*lastSegment.getDeltaY())
+    );
+    do newSegment.setDeltaX(lastSegment.getDeltaX());
+    do newSegment.setDeltaY(lastSegment.getDeltaY());
+
+    do lastSegment.setNext(newSegment);
     return;
    }
 }
