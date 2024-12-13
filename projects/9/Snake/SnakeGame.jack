@@ -21,16 +21,16 @@ class SnakeGame {
    method boolean detectWallCollision(Snake snake) {
      // returns True if head of snake has collided with one of 
      // the walls and False otherwise
-     if (snake.getLeftBound() < 1) {
+     if (snake.firstSegmentLeftBound() < 1) {
         return true;
      }
-     if (snake.getRightBound() > 510) {
+     if (snake.firstSegmentRightBound() > 510) {
         return true;
      } 
-     if (snake.getTopBound() < 1) {
+     if (snake.firstSegmentTopBound() < 1) {
         return true;
      }
-     if (snake.getBottomBound() > 254) {
+     if (snake.firstSegmentBottomBound() > 254) {
         return true;
      }
      return false;
@@ -39,10 +39,10 @@ class SnakeGame {
    method boolean detectFoodCollision(Snake snake, Food food) {
      // returns True if the head of the snake has collided with 
      // the food and False otherwise
-     if (snake.getLeftBound() < food.getRightBound()) {
-        if (snake.getRightBound() > food.getLeftBound()) {
-            if (snake.getTopBound() < food.getBottomBound()) {
-                if (snake.getBottomBound() > food.getTopBound()) {
+     if (snake.firstSegmentLeftBound() < food.getRightBound()) {
+        if (snake.firstSegmentRightBound() > food.getLeftBound()) {
+            if (snake.firstSegmentTopBound() < food.getBottomBound()) {
+                if (snake.firstSegmentBottomBound() > food.getTopBound()) {
                     return true;
                 }
             }
@@ -91,6 +91,11 @@ class SnakeGame {
             do snake.addSegment();
             do updateScore();
          }
+
+         // detect snake collision with itself
+         //  if (snake.detectSelfCollision()) {
+         //     let exit = true;
+         //  }
      } 
      return;
    }

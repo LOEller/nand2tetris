@@ -61,6 +61,22 @@ class SnakeSegment {
      return;
    }
 
+   method int getLeftBound() {
+     return getX();
+   }
+
+   method int getRightBound() {
+     return getX() + getSize();
+   }
+
+   method int getTopBound() {
+     return getY();
+   }
+
+   method int getBottomBound() {
+     return getY() + getSize();
+   }
+
    /* Getters and Setters */
 
    method void setDeltaX(int Adeltax) {

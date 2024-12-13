@@ -17,11 +17,57 @@ class Snake {
       return;
    }
 
+   method int firstSegmentLeftBound() {
+     return firstSegment.getLeftBound();
+   }
+
+   method int firstSegmentRightBound() {
+     return firstSegment.getRightBound();
+   }
+
+   method int firstSegmentTopBound() {
+     return firstSegment.getTopBound();
+   }
+
+   method int firstSegmentBottomBound() {
+     return firstSegment.getBottomBound();
+   }
+
    // Sets direction of the head of the snake 
    // to match whatever direction is input by the user
    method void setDirection(int direction) {
      do firstSegment.setDirection(direction); 
      return;
+   }
+
+   // currently this doesn't really work not sure why
+   method boolean detectSelfCollision() {
+     // determines whether the head of the snake collides with any of its
+     // own segments
+     var SnakeSegment current;
+     let current = firstSegment.getNext();
+
+     // skip the first couple segments to ignore
+     if (~(current = null)) {
+        let current = firstSegment.getNext();
+     } 
+     if (~(current = null)) {
+        let current = firstSegment.getNext();
+     } 
+
+     while (~(current = null)) {
+        if (current.getLeftBound() < firstSegment.getRightBound()) {
+            if (current.getRightBound() > firstSegment.getLeftBound()) {
+                if (current.getTopBound() < firstSegment.getBottomBound()) {
+                    if (current.getBottomBound() > firstSegment.getTopBound()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        let current = current.getNext();
+     }
+     return false;
    }
 
    method void propagateDirection() {
@@ -57,22 +103,6 @@ class Snake {
         let behind = behind.getNext();
       }
      return;
-   }
-
-   method int getLeftBound() {
-    return firstSegment.getX();
-   }
-
-   method int getRightBound() {
-    return firstSegment.getX() + firstSegment.getSize();
-   }
-
-   method int getTopBound() {
-    return firstSegment.getY();
-   }
-
-   method int getBottomBound() {
-    return firstSegment.getY() + firstSegment.getSize();
    }
 
    method void eraseMoveDraw() {
