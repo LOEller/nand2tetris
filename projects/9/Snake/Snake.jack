@@ -17,10 +17,9 @@ class Snake {
       return;
    }
 
-   // Sets direction of the snake 
+   // Sets direction of the head of the snake 
+   // to match whatever direction is input by the user
    method void setDirection(int direction) {
-     // the directiom of the first segment (head)
-     // should match whatever is input by the user
      do firstSegment.setDirection(direction); 
      return;
    }
@@ -28,11 +27,35 @@ class Snake {
    method void propagateDirection() {
      // this method propagates the directions back along the 
      // snake from its head to its tail
+      var SnakeSegment ahead;
+      var SnakeSegment behind;
 
-     // will have to be called every time the erase-move-draw
-     // loop is called since the snake segments will need to 
-     // move directions even when the head of the snake is not
-     // changing direction
+      let ahead = firstSegment;
+      let behind = firstSegment.getNext();
+
+      while (~(behind = null)) {
+        // set the next segment's direction to match the one in front of it
+        // once it moves in line with the segment ahead 
+
+        // ahead and behind are moving in DIFFERENT directions
+        if (~((ahead.getDeltaX() = behind.getDeltaX()) & (ahead.getDeltaY() = behind.getDeltaY()))) {
+            // ahead is moving up or down and behind has come to the same x pos as ahead
+            if ((ahead.getDeltaX() = 0) & (ahead.getX() = behind.getX())) {
+                do behind.setDeltaX(ahead.getDeltaX());
+                do behind.setDeltaY(ahead.getDeltaY());
+            } else {
+                // ahead is moving right or left and behind has come to the same y pos as ahead
+                if ((ahead.getDeltaY() = 0) & (ahead.getY() = behind.getY())) {
+                    do behind.setDeltaX(ahead.getDeltaX());
+                    do behind.setDeltaY(ahead.getDeltaY());
+                }
+            }
+        }
+
+        // move along the snake
+        let ahead = behind;
+        let behind = behind.getNext();
+      }
      return;
    }
 
@@ -55,8 +78,8 @@ class Snake {
    method void eraseMoveDraw() {
      if (frameCounter = 40) {
        do eraseSegments();
-       do moveSegments();
        do propagateDirection();
+       do moveSegments();
        do drawSegments();
        let frameCounter = 0;
      } else {
