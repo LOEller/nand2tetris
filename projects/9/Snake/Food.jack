@@ -13,6 +13,8 @@ class Food {
    }
 
    method void dispose() {
+      do xpos.dispose();
+      do ypos.dispose();
       do Memory.deAlloc(this);
       return;
    }
