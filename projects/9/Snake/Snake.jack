@@ -11,20 +11,17 @@ class Snake {
       return this;
    }
 
-   // TODO a more efficient way of doing this is to preallocate 
-   // an array of fixed length to store the history of the X and Y
-   // positions of the head of the snake. (histX[0], histY[0]) is the 
-   // current position of the head of the snake. Then we store the 
-   // current length as an integer and to render the snake, we step 
-   // back through the array and render a square at each position, 
-   // we encounter, doing so `length` number of times. 
+   // TODO use a doubly linked list to make implementation more efficient.
+   // to move the snake, we erase the tail segment in the list and then 
+   // delete it. we also add a new segment on the head side at the head's
+   // next position and draw it.
 
-   // each time the snake moves, we then just need to add the new
-   // position for the head at (histX[0], histY[0]) and then 
-   // copy over everything one cell to the right, which will
-   // require 2*length number of operations or something like that
+   // this way, we are only doing one draw call and one erase call for every 
+   // animation frame and things should be much faster, as none of the middle
+   // segments of the snake actually need to move. 
 
-   // erase move then draw?
+   // to extend the snake, we simply append a new node at the position where the food
+   // was to the head end of the doubly linked list
 
    method void dispose() {
       do firstSegment.dispose(); // recursively deletes all snake segments 
