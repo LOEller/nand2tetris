@@ -93,10 +93,9 @@ class SnakeGame {
          }
 
           // detect snake collision with itself
-          // TODO this doesn't really work for some reason
-          if (snake.detectSelfCollision()) {
-             let exit = true;
-          }
+         //  if (snake.detectSelfCollision()) {
+         //     let exit = true;
+         //  }
      } 
      return;
    }

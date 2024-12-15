@@ -122,11 +122,12 @@ class Snake {
       return;
    }
 
+   // why doesn't it work??
    method boolean detectSelfCollision() {
      // determines whether the head of the snake collides with any of its
      // own segments
      var SnakeSegment current;
-     let current = head.getNext();
+     let current = head.getPrev();
 
      while (~(current = null)) {
         if (current.getLeftBound() < head.getRightBound()) {
@@ -138,7 +139,7 @@ class Snake {
                 }
             }
         }
-        let current = current.getNext();
+        let current = current.getPrev();
      }
      return false;
    }
