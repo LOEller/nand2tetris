@@ -72,10 +72,6 @@ class SnakeSegment {
      return next;
    }
 
-   method SnakeSegment getPrev() {
-     return prev;
-   }
-
    method void setNext(SnakeSegment Anext) {
      let next = Anext;
      return;

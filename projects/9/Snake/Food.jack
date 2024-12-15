@@ -33,23 +33,13 @@ class Food {
      return y + size;
    }
 
-   method int getX() {
-    return x;
-   }
-
-   method int getY() {
-    return y;
-   }
-
    method void draw() {
-      // White color black
       do Screen.setColor(true);
       do Screen.drawRectangle(x, y, x + size, y + size);
       return;
    }
 
    method void erase() {
-      // Writes color white
       do Screen.setColor(false);
       do Screen.drawRectangle(x, y, x + size, y + size);
       return;

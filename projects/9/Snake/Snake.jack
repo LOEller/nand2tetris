@@ -13,7 +13,7 @@ class Snake {
       let middle = SnakeSegment.new(20, 30);
       let tail = SnakeSegment.new(20, 40);
 
-      // tail -> middle -> head
+      // set up pointers in doubly linked list
       do head.setPrev(middle);
       do middle.setNext(head);
       do middle.setPrev(tail);
@@ -48,27 +48,45 @@ class Snake {
      return;
    }
 
+   method int getNewX() {
+     if (direction = 1) {
+       return head.getX();
+     }
+     if (direction = 2) {
+       return head.getX();
+     }
+     if (direction = 3) {
+       return head.getX() - 10;
+     }
+     if (direction = 4) {
+       return head.getX() + 10;
+     }
+     return 0;
+   }
+
+   method int getNewY() {
+     if (direction = 1) {
+       return head.getY() - 10;
+     }
+     if (direction = 2) {
+       return head.getY() + 10;
+     }
+     if (direction = 3) {
+       return head.getY();
+     }
+     if (direction = 4) {
+       return head.getY();
+     }
+     return 0;
+   }
+
    method void moveSnake() {
      var SnakeSegment temp;
      var int newX, newY;
 
-     if (direction = 1) {
-       let newX = head.getX();
-       let newY = head.getY() - 10;
-     }
-     if (direction = 2) {
-       let newX = head.getX();
-       let newY = head.getY() + 10;
-     }
-     if (direction = 3) {
-       let newX = head.getX() - 10;
-       let newY = head.getY();
-     }
-     if (direction = 4) {
-       let newX = head.getX() + 10;
-       let newY = head.getY();
-     }
-
+     let newX = getNewX();
+     let newY = getNewY();
+     
      // append a new head to the snake in the direction the 
      // snake is currently moving and draw
 
@@ -92,59 +110,29 @@ class Snake {
      return;
    }
 
-
    // adds a segment to this snake
    method void addSegment() {
-    var SnakeSegment temp;
-    var int newX, newY;
+      var SnakeSegment temp;
+      let temp = SnakeSegment.new(getNewX(), getNewY());
 
-    if (direction = 1) {
-      let newX = head.getX();
-      let newY = head.getY() - 10;
-    }
-    if (direction = 2) {
-      let newX = head.getX();
-      let newY = head.getY() + 10;
-    }
-    if (direction = 3) {
-      let newX = head.getX() - 10;
-      let newY = head.getY();
-    }
-    if (direction = 4) {
-      let newX = head.getX() + 10;
-      let newY = head.getY();
-    }
-
-    let temp = SnakeSegment.new(newX, newY);
-    do temp.setPrev(head);
-    do head.setNext(temp);
-    let head = temp;
-    do head.draw();
-    return;
+      do temp.setPrev(head);
+      do head.setNext(temp);
+      let head = temp;
+      do head.draw();
+      return;
    }
 
-
-   /*
-   // currently this doesn't really work not sure why
    method boolean detectSelfCollision() {
      // determines whether the head of the snake collides with any of its
      // own segments
      var SnakeSegment current;
-     let current = firstSegment.getNext();
-
-     // skip the first couple segments to ignore
-     if (~(current = null)) {
-        let current = firstSegment.getNext();
-     } 
-     if (~(current = null)) {
-        let current = firstSegment.getNext();
-     } 
+     let current = head.getNext();
 
      while (~(current = null)) {
-        if (current.getLeftBound() < firstSegment.getRightBound()) {
-            if (current.getRightBound() > firstSegment.getLeftBound()) {
-                if (current.getTopBound() < firstSegment.getBottomBound()) {
-                    if (current.getBottomBound() > firstSegment.getTopBound()) {
+        if (current.getLeftBound() < head.getRightBound()) {
+            if (current.getRightBound() > head.getLeftBound()) {
+                if (current.getTopBound() < head.getBottomBound()) {
+                    if (current.getBottomBound() > head.getTopBound()) {
                         return true;
                     }
                 }
@@ -154,5 +142,4 @@ class Snake {
      }
      return false;
    }
-   */
 }

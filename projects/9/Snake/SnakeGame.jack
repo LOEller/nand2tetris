@@ -92,10 +92,11 @@ class SnakeGame {
             do snake.addSegment();
          }
 
-         // detect snake collision with itself
-         //  if (snake.detectSelfCollision()) {
-         //     let exit = true;
-         //  }
+          // detect snake collision with itself
+          // TODO this doesn't really work for some reason
+          if (snake.detectSelfCollision()) {
+             let exit = true;
+          }
      } 
      return;
    }
