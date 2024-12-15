@@ -33,6 +33,14 @@ class Food {
      return y + size;
    }
 
+   method int getX() {
+    return x;
+   }
+
+   method int getY() {
+    return y;
+   }
+
    method void draw() {
       // White color black
       do Screen.setColor(true);

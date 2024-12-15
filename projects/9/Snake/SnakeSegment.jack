@@ -1,14 +1,17 @@
 // Linked list node representing a single segment in the snake
 class SnakeSegment {
 
-   field int x, y, deltax, deltay, size; 
+   field int x, y; 
    field SnakeSegment next;
+   field SnakeSegment prev;
+   static int size; // all snake segments have the same size
 
    constructor SnakeSegment new(int ax, int ay) {
       let x = ax;
       let y = ay;
       let size = 10;
       let next = null;
+      let prev = null;
       return this;
    }
 
@@ -35,32 +38,6 @@ class SnakeSegment {
       return;
    }
 
-   method void move() {
-      let x = x + deltax;
-      let y = y + deltay;
-      return;
-   }
-
-   method void setDirection(int direction) {
-    if (direction = 1) {
-      do setDeltaX(0);
-      do setDeltaY(-1);
-    }
-    if (direction = 2) {
-      do setDeltaX(0);
-      do setDeltaY(1);
-    }
-    if (direction = 3) {
-      do setDeltaX(-1);
-      do setDeltaY(0);
-    }
-    if (direction = 4) {
-      do setDeltaX(1);
-      do setDeltaY(0);
-    }
-     return;
-   }
-
    method int getLeftBound() {
      return getX();
    }
@@ -79,24 +56,6 @@ class SnakeSegment {
 
    /* Getters and Setters */
 
-   method void setDeltaX(int Adeltax) {
-     let deltax = Adeltax;
-     return;
-   }
-
-   method void setDeltaY(int Adeltay) {
-     let deltay = Adeltay;
-     return;
-   }
-
-   method int getDeltaX() {
-     return deltax;
-   }
-
-   method int getDeltaY() {
-     return deltay;
-   }
-
    method int getX() {
     return x;
    }
@@ -113,8 +72,17 @@ class SnakeSegment {
      return next;
    }
 
+   method SnakeSegment getPrev() {
+     return prev;
+   }
+
    method void setNext(SnakeSegment Anext) {
      let next = Anext;
+     return;
+   }
+
+   method void setPrev(SnakeSegment Aprev) {
+     let prev = Aprev;
      return;
    }
 }

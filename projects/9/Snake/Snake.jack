@@ -1,57 +1,130 @@
 class Snake {
 
-   field SnakeSegment firstSegment;
-   field int frameCounter;
+   field SnakeSegment head;
+   field SnakeSegment tail;
+   field int direction;
 
    constructor Snake new() {
-      // create the head of the snake at (20, 20) moving down
-      let firstSegment = SnakeSegment.new(20, 20);
-      do setDirection(2);
-      let frameCounter = 0;
+      var SnakeSegment middle; 
+
+      // start with a three segment snake moving down
+      let direction = 2;
+      let head = SnakeSegment.new(20, 20);
+      let middle = SnakeSegment.new(20, 30);
+      let tail = SnakeSegment.new(20, 40);
+
+      // tail -> middle -> head
+      do head.setPrev(middle);
+      do middle.setNext(head);
+      do middle.setPrev(tail);
+      do tail.setNext(middle);
       return this;
    }
 
-   // TODO use a doubly linked list to make implementation more efficient.
-   // to move the snake, we erase the tail segment in the list and then 
-   // delete it. we also add a new segment on the head side at the head's
-   // next position and draw it.
-
-   // this way, we are only doing one draw call and one erase call for every 
-   // animation frame and things should be much faster, as none of the middle
-   // segments of the snake actually need to move. 
-
-   // to extend the snake, we simply append a new node at the position where the food
-   // was to the head end of the doubly linked list
-
    method void dispose() {
-      do firstSegment.dispose(); // recursively deletes all snake segments 
+      do head.dispose(); // recursively deletes all snake segments 
       do Memory.deAlloc(this);
       return;
    }
 
-   method int firstSegmentLeftBound() {
-     return firstSegment.getLeftBound();
+   method int getLeftBound() {
+     return head.getLeftBound();
    }
 
-   method int firstSegmentRightBound() {
-     return firstSegment.getRightBound();
+   method int getRightBound() {
+     return head.getRightBound();
    }
 
-   method int firstSegmentTopBound() {
-     return firstSegment.getTopBound();
+   method int getTopBound() {
+     return head.getTopBound();
    }
 
-   method int firstSegmentBottomBound() {
-     return firstSegment.getBottomBound();
+   method int getBottomBound() {
+     return head.getBottomBound();
    }
 
-   // Sets direction of the head of the snake 
-   // to match whatever direction is input by the user
-   method void setDirection(int direction) {
-     do firstSegment.setDirection(direction); 
+   method void setDirection(int Adirection) {
+     let direction = Adirection;
      return;
    }
 
+   method void moveSnake() {
+     var SnakeSegment temp;
+     var int newX, newY;
+
+     if (direction = 1) {
+       let newX = head.getX();
+       let newY = head.getY() - 10;
+     }
+     if (direction = 2) {
+       let newX = head.getX();
+       let newY = head.getY() + 10;
+     }
+     if (direction = 3) {
+       let newX = head.getX() - 10;
+       let newY = head.getY();
+     }
+     if (direction = 4) {
+       let newX = head.getX() + 10;
+       let newY = head.getY();
+     }
+
+     // append a new head to the snake in the direction the 
+     // snake is currently moving and draw
+
+     let temp = SnakeSegment.new(newX, newY); // temp becomes the new head
+     do temp.setPrev(head);
+     if ((newX + 10 < 510) & (newY + 10 < 254)) {
+       if ((newX > 0) & (newY > 0)) {
+         do temp.draw();
+       }
+     }
+     do head.setNext(temp);
+     let head = temp;
+
+     // erase the tail segment of the snake then delete that node
+     let temp = tail;
+     let tail = tail.getNext(); // reassign tail pointer
+     do temp.erase();
+     do Memory.deAlloc(temp); // delete the previous tail
+     do tail.setPrev(null);
+    
+     return;
+   }
+
+
+   // adds a segment to this snake
+   method void addSegment() {
+    var SnakeSegment temp;
+    var int newX, newY;
+
+    if (direction = 1) {
+      let newX = head.getX();
+      let newY = head.getY() - 10;
+    }
+    if (direction = 2) {
+      let newX = head.getX();
+      let newY = head.getY() + 10;
+    }
+    if (direction = 3) {
+      let newX = head.getX() - 10;
+      let newY = head.getY();
+    }
+    if (direction = 4) {
+      let newX = head.getX() + 10;
+      let newY = head.getY();
+    }
+
+    let temp = SnakeSegment.new(newX, newY);
+    do temp.setPrev(head);
+    do head.setNext(temp);
+    let head = temp;
+    do head.draw();
+    return;
+   }
+
+
+   /*
    // currently this doesn't really work not sure why
    method boolean detectSelfCollision() {
      // determines whether the head of the snake collides with any of its
@@ -81,112 +154,5 @@ class Snake {
      }
      return false;
    }
-
-   method void propagateDirection() {
-     // this method propagates the directions back along the 
-     // snake from its head to its tail
-      var SnakeSegment ahead;
-      var SnakeSegment behind;
-
-      let ahead = firstSegment;
-      let behind = firstSegment.getNext();
-
-      while (~(behind = null)) {
-        // set the next segment's direction to match the one in front of it
-        // once it moves in line with the segment ahead 
-
-        // ahead and behind are moving in DIFFERENT directions
-        if (~((ahead.getDeltaX() = behind.getDeltaX()) & (ahead.getDeltaY() = behind.getDeltaY()))) {
-            // ahead is moving up or down and behind has come to the same x pos as ahead
-            if ((ahead.getDeltaX() = 0) & (ahead.getX() = behind.getX())) {
-                do behind.setDeltaX(ahead.getDeltaX());
-                do behind.setDeltaY(ahead.getDeltaY());
-            } else {
-                // ahead is moving right or left and behind has come to the same y pos as ahead
-                if ((ahead.getDeltaY() = 0) & (ahead.getY() = behind.getY())) {
-                    do behind.setDeltaX(ahead.getDeltaX());
-                    do behind.setDeltaY(ahead.getDeltaY());
-                }
-            }
-        }
-
-        // move along the snake
-        let ahead = behind;
-        let behind = behind.getNext();
-      }
-     return;
-   }
-
-   method void eraseMoveDraw() {
-     if (frameCounter = 40) {
-       do eraseSegments();
-       do propagateDirection();
-       do moveSegments();
-       do drawSegments();
-       let frameCounter = 0;
-     } else {
-        let frameCounter = frameCounter + 1;
-     }
-     return;
-   }
-
-   // goes through the list of snake segments and calls 
-   // draw on each one
-   method void drawSegments() {
-      var SnakeSegment current;
-      let current = firstSegment;
-      while (~(current = null)) {
-        do current.draw();
-        let current = current.getNext();
-      }
-      return;
-   }
-
-   // goes through the list of snake segments and calls 
-   // erase on each one
-   method void eraseSegments() {
-      var SnakeSegment current;
-      let current = firstSegment;
-      while (~(current = null)) {
-        do current.erase();
-        let current = current.getNext();
-      }
-      return;
-   }
-
-   // goes through the list of snake segments and updates their positions 
-   // appropriately
-   method void moveSegments() {
-      var SnakeSegment current;
-      let current = firstSegment;
-      while (~(current = null)) {
-        do current.move();
-        let current = current.getNext();
-      }
-      return;
-   }
-
-   // adds a segment to this snake
-   method void addSegment() {
-    var SnakeSegment lastSegment; // last segment in the snake 
-    var SnakeSegment newSegment; // new segment to add 
-
-    let lastSegment = firstSegment;
-    while (~(lastSegment.getNext() = null)) {
-      let lastSegment = lastSegment.getNext();
-    }
-
-    // create a new segment moving the same direction as the last segment
-    // place it one segment-length behind the current tail in the opposite
-    // direction that the tail is currently moving
-    let newSegment = SnakeSegment.new(
-        lastSegment.getX() - (lastSegment.getSize()*lastSegment.getDeltaX()),
-        lastSegment.getY() - (lastSegment.getSize()*lastSegment.getDeltaY())
-    );
-    do newSegment.setDeltaX(lastSegment.getDeltaX());
-    do newSegment.setDeltaY(lastSegment.getDeltaY());
-
-    do lastSegment.setNext(newSegment);
-    return;
-   }
+   */
 }
