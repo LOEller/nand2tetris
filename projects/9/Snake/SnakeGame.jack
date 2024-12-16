@@ -21,33 +21,27 @@ class SnakeGame {
    method boolean detectWallCollision(Snake snake) {
      // returns True if head of snake has collided with one of 
      // the walls and False otherwise
-     if (snake.getLeftBound() < 0) {
+     if (snake.getX() < 0) {
         return true;
      }
-     if (snake.getRightBound() > 510) {
+     if (snake.getX() > 51) {
         return true;
      } 
-     if (snake.getTopBound() < 0) {
+     if (snake.getY() < 0) {
         return true;
      }
-     if (snake.getBottomBound() > 254) {
+     if (snake.getY() > 24) {
         return true;
      }
      return false;
    }
 
    method boolean detectFoodCollision(Snake snake, Food food) {
-     // returns True if the head of the snake has collided with 
-     // the food and False otherwise
-     if (snake.getLeftBound() < food.getRightBound()) {
-        if (snake.getRightBound() > food.getLeftBound()) {
-            if (snake.getTopBound() < food.getBottomBound()) {
-                if (snake.getBottomBound() > food.getTopBound()) {
-                    return true;
-                }
-            }
-        }
-     }
+      // returns True if the head of the snake has collided with 
+      // the food and False otherwise
+      if ((snake.getX() = food.getX()) & (snake.getY() = food.getY())) {
+        return true;
+      }
      return false;
    }
 
@@ -85,7 +79,6 @@ class SnakeGame {
 
         // detect collision with the food
         if (detectFoodCollision(snake, food)) {
-            do food.erase();
             do food.move();
             do food.draw();
             do updateScore();
@@ -93,9 +86,9 @@ class SnakeGame {
          }
 
           // detect snake collision with itself
-         //  if (snake.detectSelfCollision()) {
-         //     let exit = true;
-         //  }
+          if (snake.detectSelfCollision()) {
+             let exit = true;
+          }
      } 
      return;
    }

@@ -1,0 +1,39 @@
+class Grid {
+
+   static int size, m, n;
+
+   constructor Grid new() {
+     // grid of 24 x 51 squares of size 10
+     //let m = 24;
+     //let n = 51;
+     return this;
+   }
+
+   function int computeX(int x) {
+     return Math.multiply(x, 10);
+   }
+
+   function int computeY(int y) {
+     return Math.multiply(y, 10) + 14;
+   }
+
+   function void draw(int Ax, int Ay) {
+     var int x, y;
+     let x = Grid.computeX(Ax);
+     let y = Grid.computeY(Ay);
+
+     do Screen.setColor(true);
+     do Screen.drawRectangle(x, y, x + 10, y + 10);
+     return;
+   }
+
+   function void erase(int Ax, int Ay) {
+     var int x, y;
+     let x = Grid.computeX(Ax);
+     let y = Grid.computeY(Ay); 
+
+     do Screen.setColor(false);
+     do Screen.drawRectangle(x, y, x + 10, y + 10);
+     return;
+   }
+}

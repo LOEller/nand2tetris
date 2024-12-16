@@ -1,6 +1,10 @@
 class Main {
     function void main() {
         var SnakeGame game;
+
+        do Screen.setColor(true);
+        do Screen.drawLine(0, 14, 510, 14);
+
         let game = SnakeGame.new();
         do game.run();
         do game.dispose();

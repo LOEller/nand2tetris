@@ -1,15 +1,22 @@
 class Food {
 
-   field int x, y, size, count;
+   field int x, y, count;
    field Array xpos;
    field Array ypos;
 
    constructor Food new() {
-      let size = 10;
       do initPosArray();
       do move(); // sets inital x and y pos
       do draw();
       return this;
+   }
+
+   method int getX() {
+     return x;
+   }
+
+   method int getY() {
+     return y;
    }
 
    method void dispose() {
@@ -17,31 +24,8 @@ class Food {
       return;
    }
 
-    method int getLeftBound() {
-      return x;
-    }
-
-   method int getRightBound() {
-     return x + size;
-   }
-
-   method int getTopBound() {
-     return y;
-   }
-
-   method int getBottomBound() {
-     return y + size;
-   }
-
    method void draw() {
-      do Screen.setColor(true);
-      do Screen.drawRectangle(x, y, x + size, y + size);
-      return;
-   }
-
-   method void erase() {
-      do Screen.setColor(false);
-      do Screen.drawRectangle(x, y, x + size, y + size);
+      do Grid.draw(x, y);
       return;
    }
 
@@ -63,27 +47,27 @@ class Food {
      let ypos = Array.new(10);
      let count = -1;
 
-     let xpos[0] = 399;
-     let xpos[1] = 47;
-     let xpos[2] = 408;
-     let xpos[3] = 174;
-     let xpos[4] = 96;
-     let xpos[5] = 242;
-     let xpos[6] = 56;
-     let xpos[7] = 262;
-     let xpos[8] = 469;
-     let xpos[9] = 339;
+     let xpos[0] = 4;
+     let xpos[1] = 14;
+     let xpos[2] = 32;
+     let xpos[3] = 19;
+     let xpos[4] = 2;
+     let xpos[5] = 20;
+     let xpos[6] = 7;
+     let xpos[7] = 0;
+     let xpos[8] = 21;
+     let xpos[9] = 9;
 
-     let ypos[0] = 113;
-     let ypos[1] = 212;
-     let ypos[2] = 196;
-     let ypos[3] = 198;
-     let ypos[4] = 117;
-     let ypos[5] = 122;
-     let ypos[6] = 192;
-     let ypos[7] = 220;
-     let ypos[8] = 111;
-     let ypos[9] = 146;
+     let ypos[0] = 7;
+     let ypos[1] = 22;
+     let ypos[2] = 15;
+     let ypos[3] = 9;
+     let ypos[4] = 8;
+     let ypos[5] = 3;
+     let ypos[6] = 4;
+     let ypos[7] = 22;
+     let ypos[8] = 19;
+     let ypos[9] = 10;
      return;
    }
 }

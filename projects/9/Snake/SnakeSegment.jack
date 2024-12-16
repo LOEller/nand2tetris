@@ -4,12 +4,10 @@ class SnakeSegment {
    field int x, y; 
    field SnakeSegment next;
    field SnakeSegment prev;
-   static int size; // all snake segments have the same size
 
    constructor SnakeSegment new(int ax, int ay) {
       let x = ax;
       let y = ay;
-      let size = 10;
       let next = null;
       let prev = null;
       return this;
@@ -25,33 +23,13 @@ class SnakeSegment {
    }
 
    method void draw() {
-      // Draws the segment using the color black
-      do Screen.setColor(true);
-      do Screen.drawRectangle(x, y, x + size, y + size);
+      do Grid.draw(x, y);
       return;
    }
 
    method void erase() {
-      // Erases the segment using the color white (background color)
-      do Screen.setColor(false);
-      do Screen.drawRectangle(x, y, x + size, y + size);
+      do Grid.erase(x, y);
       return;
-   }
-
-   method int getLeftBound() {
-     return getX();
-   }
-
-   method int getRightBound() {
-     return getX() + getSize();
-   }
-
-   method int getTopBound() {
-     return getY();
-   }
-
-   method int getBottomBound() {
-     return getY() + getSize();
    }
 
    /* Getters and Setters */
@@ -62,10 +40,6 @@ class SnakeSegment {
 
    method int getY() {
     return y;
-   }
-
-   method int getSize() {
-    return size;
    }
 
    method SnakeSegment getNext() {
