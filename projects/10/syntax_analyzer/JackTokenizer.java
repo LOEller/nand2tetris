@@ -16,8 +16,13 @@ public class JackTokenizer {
     Set<Character> symbols = new HashSet<>(
         Arrays.asList(',', ';', '[', ']', '{', '}', '-', '+', '<', '>', '=', '(', ')', '|', '&', '/', '~', '*', '.'
     ));
+    Set<String> keywords = new HashSet<>(
+        Arrays.asList(
+            "class", "method", "function", "constructor", "int", "boolean", "char", "void", "var", "static", "field", "let", "do", "if", "else", "while", "return", "true", "false", "null", "this"
+        )
+    );
 
-    public JackTokenizer(String filename) throws IOException {  
+    public JackTokenizer(String filename) throws IOException { 
         BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
         readFile(bufferedReader);
         bufferedReader.close();
@@ -45,39 +50,65 @@ public class JackTokenizer {
                 continue;
             }
             if (!multiLineComment && !line.isEmpty() && !line.startsWith("//")) {
-                String[] words = line.split("\\s");
-                for (String s : words) {
-                    if (!s.isEmpty()) {
-                        splitToken(s);
-                    }
-                }
+                splitLine(line.trim());
             }
         }
     }
 
-    private void splitToken(String tokenString) {
-        // splits the non-whitespace sequences in each line 
-        // into individual tokens
-        if (tokenString.length() == 1) {
-            tokens.add(tokenString);
+    private void splitLine(String line) {
+        // splits a line of text into individual tokens
+        if (line.length() == 1) {
+            tokens.add(line);
             return;
         } 
 
-        String current = "";
-        for (int i = 0; i < tokenString.length(); i++) {
-            if (symbols.contains(tokenString.charAt(i))) {
-                // the current char is a symbol
-                if (!current.isEmpty()) {
-                    tokens.add(current);
-                }
-                tokens.add(Character.toString(tokenString.charAt(i)));
-                current = "";
-            } else {
-                current += tokenString.charAt(i);
+        // remove any comments at the end of the line
+        for (int i = 0; i < line.length()-1; i++) { 
+            if (line.charAt(i) == '/' && line.charAt(i+1) == '/') {
+                // the rest of this line is a comment and should be ignored
+                line = line.substring(0, i);
+                break;
             }
         }
-        if (!current.isEmpty()) {
-            tokens.add(current);
+
+        // iterate through each char in the line building the tokens
+        String token = "";
+        boolean inString = false;
+        for (int i = 0; i < line.length(); i++) {
+            if (line.charAt(i) == '"') {
+                // current char is a double quote
+                if (inString) {
+                    // this is the end of the string
+                    inString = false;
+                    token += line.charAt(i);
+                    //tokens.add(token);
+                } else {
+                    // this is the start of a string
+                    token += line.charAt(i);
+                    inString = true;
+                }
+            } else if (inString) {
+                // we are inside a string so ignore symbols and whitespace
+                token += line.charAt(i);
+            } else if (line.charAt(i) == ' ') {
+                // current char is white space
+                if (!token.isEmpty()) {
+                    tokens.add(token);
+                }
+                token = "";
+            } else if (symbols.contains(line.charAt(i))) {
+                // current char is a symbol
+                if (!token.isEmpty()) {
+                    tokens.add(token);
+                }
+                tokens.add(Character.toString(line.charAt(i)));
+                token = "";
+            } else {
+                token += line.charAt(i);
+            }
+        }
+        if (!token.isEmpty()) {
+            tokens.add(token);
         }
     }
 
@@ -94,26 +125,48 @@ public class JackTokenizer {
     }
 
     public TokenType tokenType() {
-        return TokenType.KEYWORD;
+        if (currentToken().length() == 1 && symbols.contains(currentToken().charAt(0))) {
+            return TokenType.symbol;
+        } 
+        if (keywords.contains(currentToken())) {
+            return TokenType.keyword;
+        } 
+        if (currentToken().startsWith("\"")) {
+            return TokenType.stringConstant;
+        }
+        if (currentToken().matches("-?\\d+")) {
+            // integer regex
+            return TokenType.integerConstant;
+        }
+        return TokenType.identifier;
     }
 
-    public Keyword keyWord() {
-        return Keyword.CLASS;
+    public String keyWord() {
+        return currentToken();
     }
 
-    public char symbol() {
-        return 'a';
+    public String symbol() {
+        if (currentToken().equals("<")) {
+            return "&lt;";
+        }
+        if (currentToken().equals(">")) {
+            return "&gt;";
+        }
+        if (currentToken().equals("&")) {
+            return "&amp;";
+        }
+        return currentToken();
     }
 
     public String identifier() {
-        return "abc";
+        return currentToken();
     }
 
     public int intVal() {
-        return 0;
+        return Integer.parseInt(currentToken());
     }
 
     public String stringVal() {
-        return "abc";
+        return currentToken().substring(1, currentToken().length() - 1);
     }
 }

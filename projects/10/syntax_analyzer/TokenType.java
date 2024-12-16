@@ -1,6 +1,14 @@
 package syntax_analyzer;
 
 enum TokenType {
-   KEYWORD,
-   SYMBOL
+   // KEYWORD,
+   // SYMBOL,
+   // IDENTIFIER,
+   // INT_CONST,
+   // STRING_CONST
+   keyword, 
+   symbol,
+   identifier,
+   integerConstant,
+   stringConstant
 }
