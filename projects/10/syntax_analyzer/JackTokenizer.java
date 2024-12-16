@@ -126,19 +126,19 @@ public class JackTokenizer {
 
     public TokenType tokenType() {
         if (currentToken().length() == 1 && symbols.contains(currentToken().charAt(0))) {
-            return TokenType.symbol;
+            return TokenType.SYMBOL;
         } 
         if (keywords.contains(currentToken())) {
-            return TokenType.keyword;
+            return TokenType.KEYWORD;
         } 
         if (currentToken().startsWith("\"")) {
-            return TokenType.stringConstant;
+            return TokenType.STRING_CONST;
         }
         if (currentToken().matches("-?\\d+")) {
             // integer regex
-            return TokenType.integerConstant;
+            return TokenType.INT_CONST;
         }
-        return TokenType.identifier;
+        return TokenType.IDENTIFIER;
     }
 
     public String keyWord() {

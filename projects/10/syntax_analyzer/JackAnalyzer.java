@@ -16,50 +16,25 @@ public class JackAnalyzer {
         writer.write("<tokens>\n");
         while (tokenizer.hasMoreTokens()) {
             tokenizer.advance();
-            if (tokenizer.tokenType() == TokenType.symbol) {
+            if (tokenizer.tokenType() == TokenType.SYMBOL) {
                 writer.write(
-                    String.format(
-                        "    <%s> %s </%s>\n", 
-                        tokenizer.tokenType(), 
-                        tokenizer.symbol(),
-                        tokenizer.tokenType()
-                    )
+                    String.format("    <symbol> %s </symbol>\n", tokenizer.symbol())
                 );
-            } else if (tokenizer.tokenType() == TokenType.identifier) {
+            } else if (tokenizer.tokenType() == TokenType.IDENTIFIER) {
                 writer.write(
-                    String.format(
-                        "    <%s> %s </%s>\n", 
-                        tokenizer.tokenType(), 
-                        tokenizer.identifier(),
-                        tokenizer.tokenType()
-                    )
+                    String.format("    <identifier> %s </identifier>\n", tokenizer.identifier())
                 );
-            } else if (tokenizer.tokenType() == TokenType.integerConstant) {
+            } else if (tokenizer.tokenType() == TokenType.INT_CONST) {
                 writer.write(
-                    String.format(
-                        "    <%s> %s </%s>\n", 
-                        tokenizer.tokenType(), 
-                        tokenizer.intVal(),
-                        tokenizer.tokenType()
-                    )
+                    String.format("    <integerConstant> %s </integerConstant>\n", tokenizer.intVal())
                 );
-            } else if (tokenizer.tokenType() == TokenType.stringConstant) {
+            } else if (tokenizer.tokenType() == TokenType.STRING_CONST) {
                 writer.write(
-                    String.format(
-                        "    <%s> %s </%s>\n", 
-                        tokenizer.tokenType(), 
-                        tokenizer.stringVal(),
-                        tokenizer.tokenType()
-                    )
+                    String.format("    <stringConstant> %s </stringConstant>\n", tokenizer.stringVal())
                 );
-            } else if (tokenizer.tokenType() == TokenType.keyword) {
+            } else if (tokenizer.tokenType() == TokenType.KEYWORD) {
                 writer.write(
-                    String.format(
-                        "    <%s> %s </%s>\n", 
-                        tokenizer.tokenType(), 
-                        tokenizer.keyWord(),
-                        tokenizer.tokenType()
-                    )
+                    String.format("    <keyword> %s </keyword>\n", tokenizer.keyWord())
                 );
             } 
         }
