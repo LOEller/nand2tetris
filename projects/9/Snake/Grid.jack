@@ -1,11 +1,7 @@
 class Grid {
 
-   static int size, m, n;
-
    constructor Grid new() {
      // grid of 24 x 51 squares of size 10
-     //let m = 24;
-     //let n = 51;
      return this;
    }
 

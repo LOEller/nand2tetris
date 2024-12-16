@@ -28,6 +28,20 @@ class Snake {
    }
 
    method void setDirection(int Adirection) {
+     // prevent a snake moving right from going directly
+     // to left, etc
+     if (Adirection = 1 & direction = 2) {
+       return;
+     }
+     if (Adirection = 2 & direction = 1) {
+       return;
+     }
+     if (Adirection = 3 & direction = 4) {
+       return;
+     }
+     if (Adirection = 4 & direction = 3) {
+       return;
+     }
      let direction = Adirection;
      return;
    }

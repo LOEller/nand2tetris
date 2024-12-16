@@ -24,13 +24,13 @@ class SnakeGame {
      if (snake.getX() < 0) {
         return true;
      }
-     if (snake.getX() > 51) {
+     if (snake.getX() > 49) {
         return true;
      } 
      if (snake.getY() < 0) {
         return true;
      }
-     if (snake.getY() > 24) {
+     if (snake.getY() > 22) {
         return true;
      }
      return false;

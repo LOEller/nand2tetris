@@ -9,9 +9,6 @@ class Main {
         do game.run();
         do game.dispose();
 
-        // display game end screen
-        do Screen.setColor(true);
-        do Screen.drawRectangle(0, 0, 510, 254);
         do Output.moveCursor(10, 25);
         do Output.printString("Game Over!");
         return;
