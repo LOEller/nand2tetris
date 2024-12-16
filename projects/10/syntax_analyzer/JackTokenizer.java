@@ -23,13 +23,28 @@ public class JackTokenizer {
         bufferedReader.close();
     }
 
-    private void readFile(BufferedReader reader) throws IOException{
+    private void readFile(BufferedReader reader) throws IOException {
+        // reads the source file line by line and handle comments, blank lines, etc
         String line = null;
-
-        // TODO need to handle multi line comments
+        boolean multiLineComment = false;
 
         while ((line = reader.readLine()) != null) {
-            if (!line.isEmpty() && !line.startsWith("//")) {
+            if (line.startsWith("/*")) {
+                if (line.endsWith("*/")) {
+                    // it's a multi line comment that is actually
+                    // only a single line
+                    continue;
+                }
+                // starting a multi line comment
+                multiLineComment = true;
+                continue;
+            }
+            if (line.endsWith("*/")) {
+                // ending a multi line comment
+                multiLineComment = false;
+                continue;
+            }
+            if (!multiLineComment && !line.isEmpty() && !line.startsWith("//")) {
                 String[] words = line.split("\\s");
                 for (String s : words) {
                     if (!s.isEmpty()) {
@@ -41,6 +56,8 @@ public class JackTokenizer {
     }
 
     private void splitToken(String tokenString) {
+        // splits the non-whitespace sequences in each line 
+        // into individual tokens
         if (tokenString.length() == 1) {
             tokens.add(tokenString);
             return;
