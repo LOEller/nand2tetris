@@ -120,7 +120,7 @@ public class JackTokenizer {
         tokenIndex++;
     }
 
-    public String currentToken() {
+    private String currentToken() {
         return tokens.get(tokenIndex);
     }
 
