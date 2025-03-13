@@ -135,10 +135,17 @@ public class CompilationEngine {
         );
 
         this.tokenizer.advance();
-        compileParameterList();
+        if (this.tokenizer.tokenType() != TokenType.SYMBOL) {
+            // if there are parameters, compile them
+            // (the next token will not be a symbol for close parenthesis)
+            compileParameterList();
+            this.tokenizer.advance();
+        } else {
+            // if there are no parameters, write empty parameter list
+            writer.write("<parameterList>\n</parameterList>\n");
+        }
 
         // close paren
-        this.tokenizer.advance();
         writer.write(
             String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
         );
@@ -191,10 +198,28 @@ public class CompilationEngine {
         writer.write("<subroutineBody>\n");
 
         // open curly brace
-        // zero or more var dec
-        // statements
-        // close curly brace
+        this.tokenizer.advance();
+        writer.write(
+            String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+        );
 
+        // zero or more var dec
+        this.tokenizer.advance();
+        while (
+            this.tokenizer.tokenType() == TokenType.KEYWORD &&
+            this.tokenizer.keyWord().equals("var")
+        ) {
+            compileVarDec();
+            this.tokenizer.advance();
+        }
+
+        // statements
+        compileStatements();
+
+        // close curly brace
+        writer.write(
+            String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+        );
 
         writer.write("</subroutineBody>\n");
     }
@@ -202,21 +227,50 @@ public class CompilationEngine {
     private void compileVarDec() throws IOException {
         writer.write("<varDec>\n");
 
-        // keyword var
-        // type
-        // var name
+        // write keyword var
+        writer.write(
+            String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
+        );
 
-        // zero or more of:
-        // comma
-        // var name
+        // write type
+        this.tokenizer.advance();
+        writer.write(
+            String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
+        );
 
-        // semicolon
+        // write var name
+        this.tokenizer.advance();
+        writer.write(
+            String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
+        );
+
+        this.tokenizer.advance();
+        // handle additional var names
+        while (this.tokenizer.tokenType() == TokenType.SYMBOL && this.tokenizer.symbol().equals(",")) {
+            // write comma
+            writer.write(
+                String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+            );
+
+            // write next var name
+            this.tokenizer.advance();
+            writer.write(
+                String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
+            );
+
+            this.tokenizer.advance();
+        }
+
+        // write semicolon
+        writer.write(
+            String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+        );
 
         writer.write("</varDec>\n");
     }
 
     private void compileStatements() throws IOException {
-        writer.write("<statements\n");
+        writer.write("<statements>\n");
 
         // zero or more of:
         // let statement | if statement | while statement | do statement | return statement
@@ -225,20 +279,20 @@ public class CompilationEngine {
             if (this.tokenizer.tokenType() != TokenType.KEYWORD) {
                 break;
             } else if (this.tokenizer.keyWord().equals("let")) {
-                this.tokenizer.advance();
                 compileLet();
+                this.tokenizer.advance();
             } else if (this.tokenizer.keyWord().equals("if")) {
-                this.tokenizer.advance();
                 compileIf();
+                this.tokenizer.advance();
             } else if (this.tokenizer.keyWord().equals("while")) {
-                this.tokenizer.advance();
                 compileWhile();
+                this.tokenizer.advance();
             } else if (this.tokenizer.keyWord().equals("do")) {
-                this.tokenizer.advance();
                 compileDo();
-            } else if (this.tokenizer.keyWord().equals("return")) {
                 this.tokenizer.advance();
+            } else if (this.tokenizer.keyWord().equals("return")) {
                 compileReturn();
+                this.tokenizer.advance();
             } else {
                 break;
             }
@@ -264,8 +318,41 @@ public class CompilationEngine {
         writer.write("</doStatement>\n");
     }
 
-    private void compileLet() {
-        // 'let' varName ('[' expression ']')? '=' expression ';'
+    private void compileLet() throws IOException {
+        writer.write("<letStatement>\n");
+
+        // keyword let
+        writer.write(String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord()));
+        this.tokenizer.advance();
+
+        // write varname
+        writer.write(String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier()));
+        this.tokenizer.advance();
+
+        // check for array access with []
+        if (this.tokenizer.tokenType() == TokenType.SYMBOL && this.tokenizer.symbol().equals("[")) {
+            writer.write("    <symbol> [ </symbol>\n");
+            this.tokenizer.advance();
+            
+            compileExpression();
+            this.tokenizer.advance();
+
+            writer.write("    <symbol> ] </symbol>\n");
+            this.tokenizer.advance();
+        }
+
+        // equals sign
+        writer.write("    <symbol> = </symbol>\n");
+        this.tokenizer.advance();
+
+        // expression
+        compileExpression();
+        this.tokenizer.advance();
+
+        // semicolon
+        writer.write("    <symbol> ; </symbol>\n");
+        
+        writer.write("</letStatement>\n");
     }
 
     private void compileWhile() {
