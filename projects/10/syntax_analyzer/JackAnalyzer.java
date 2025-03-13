@@ -2,7 +2,6 @@ package syntax_analyzer;
 
 import java.io.File;
 import java.io.IOException;
-
 public class JackAnalyzer {
 
     private static void compileFile(String filename) throws IOException {
