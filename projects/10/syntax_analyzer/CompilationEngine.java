@@ -305,16 +305,40 @@ public class CompilationEngine {
         writer.write("<doStatement>\n");
 
         // keyword do
+        writer.write(String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord()));
+        this.tokenizer.advance();
 
-        // subroutine call  
-        //  identifier subroutine name
-        //  open paren
-        //  expression list
-        //  close paren
-        // ... 
+        // write subroutine/class/var name
+        writer.write(String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier()));
+        this.tokenizer.advance();
+
+        // check if there's a dot operator
+        if (this.tokenizer.tokenType() == TokenType.SYMBOL && this.tokenizer.symbol().equals(".")) {
+            writer.write("    <symbol> . </symbol>\n");
+            this.tokenizer.advance();
+
+            // write subroutine name after dot
+            writer.write(String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier()));
+            this.tokenizer.advance();
+        }
+
+        // write open parenthesis
+        writer.write("    <symbol> ( </symbol>\n");
+        this.tokenizer.advance();
+
+        // compile expression list unless the next token is a close parenthesis
+        if (this.tokenizer.tokenType() != TokenType.SYMBOL && !this.tokenizer.symbol().equals(")")) {
+            compileExpressionList();
+            this.tokenizer.advance();
+        }
+
+        // write close parenthesis  
+        writer.write("    <symbol> ) </symbol>\n");
+        this.tokenizer.advance();
 
         // semicolon
-
+        writer.write(String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol()));
+       
         writer.write("</doStatement>\n");
     }
 
@@ -363,9 +387,14 @@ public class CompilationEngine {
         writer.write("<returnStatement>\n");
 
         // keyword 'return' 
-        // zero or one of expression 
-        // semicolon 
+        writer.write(String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())); 
+        this.tokenizer.advance();
 
+        // zero or one of expression 
+        // TODO for now let's assume there's no expression
+        
+        // semicolon 
+        writer.write("    <symbol> ; </symbol>\n");
         writer.write("</returnStatement>\n");
     }
 
@@ -387,7 +416,9 @@ public class CompilationEngine {
         
     }
 
-    private void compileExpressionList() {
-        
+    private void compileExpressionList() throws IOException {
+        writer.write("<expressionList>\n");
+
+        writer.write("</expressionList>\n");
     }
 }
