@@ -10,44 +10,55 @@ public class CompilationEngine {
     public CompilationEngine(JackTokenizer tokenizer, String outputFile) throws IOException {
         writer = new FileWriter(outputFile);
         this.tokenizer = tokenizer;
+        this.tokenizer.advance(); // advance to the first token
     }
 
     public void closeWriter() throws IOException {
         writer.close();
     }
 
+    // IMPORTANT:
+    // Each function expects that the tokenizer has been advanced
+    // BEFORE it executes so the first token of the relevant lexical element
+    // is the current token in the tokenizer. It also advances the tokenizer 
+    // before it returns so the next function can
+    // expect the same and so on...
+
+    // In other words, each time we write something to the output file,
+    // advance the tokenizer immediately after the write. Calling another 
+    // compile method DOES NOT require an additional advance after invoking
+    // the method.
+
     public void compileClass() throws IOException {
         writer.write("<class>\n");
 
-        // first thing should be the keyword class
-        this.tokenizer.advance();
+        // keyword class
         writer.write(
             String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
         );
+        this.tokenizer.advance();
 
         // then should be an identifier
-        this.tokenizer.advance();
         writer.write(
             String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
         );
+        this.tokenizer.advance();
 
         // then open curly brace
-        this.tokenizer.advance();
         writer.write(
             String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
         );
-
         this.tokenizer.advance();
+
         while (
             this.tokenizer.tokenType() == TokenType.KEYWORD &&
             (this.tokenizer.keyWord().equals("field") || 
             this.tokenizer.keyWord().equals("static"))
         ) {
-            // process as many classverDec as needed
+            // process as many classvarDec as needed
             compileClassVarDec();
         }
 
-        this.tokenizer.advance();
         while (
             this.tokenizer.tokenType() == TokenType.KEYWORD &&
             (this.tokenizer.keyWord().equals("constructor") || 
@@ -56,14 +67,14 @@ public class CompilationEngine {
         ) {
             // process as many subroutines as needed
             compileSubroutine();
-            this.tokenizer.advance();
         }
 
         // finally a close curly brace
-        this.tokenizer.advance();
         writer.write(
             String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
         );
+
+        // that should have been the final token so do not advance here
 
         writer.write("</class>\n");
     }
@@ -75,20 +86,20 @@ public class CompilationEngine {
         writer.write(
             String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
         );
+        this.tokenizer.advance();
 
         // write the type (another keyword)
-        this.tokenizer.advance();
         writer.write(
             String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
         );
+        this.tokenizer.advance();
 
         // write the var name identifier
-        this.tokenizer.advance();
         writer.write(
             String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
         );
-
         this.tokenizer.advance();
+
         // there are optionally one or more ", Varname" following the first var name
         while (this.tokenizer.symbol().equals(",")) {
             writer.write(
@@ -105,6 +116,7 @@ public class CompilationEngine {
         writer.write(
             String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
         );
+        this.tokenizer.advance();
 
         writer.write("</classVarDec>\n");
     }
@@ -116,31 +128,30 @@ public class CompilationEngine {
         writer.write(
             String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
         );
+        this.tokenizer.advance();
 
         // write the type keyword
-        this.tokenizer.advance();
         writer.write(
             String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
         );
+        this.tokenizer.advance();
 
         // write the identifier for subroutine names
-        this.tokenizer.advance();
         writer.write(
             String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
         );
+        this.tokenizer.advance();
 
         // open paren
-        this.tokenizer.advance();
         writer.write(
             String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
         );
-
         this.tokenizer.advance();
+
         if (this.tokenizer.tokenType() != TokenType.SYMBOL) {
             // if there are parameters, compile them
             // (the next token will not be a symbol for close parenthesis)
             compileParameterList();
-            this.tokenizer.advance();
         } else {
             // if there are no parameters, write empty parameter list
             writer.write("<parameterList>\n</parameterList>\n");
@@ -150,6 +161,7 @@ public class CompilationEngine {
         writer.write(
             String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
         );
+        this.tokenizer.advance();
 
         compileSubroutineBody();
 
@@ -163,32 +175,32 @@ public class CompilationEngine {
         writer.write(
             String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
         );
+        this.tokenizer.advance();
         
         // write var name
-        this.tokenizer.advance();
         writer.write(
             String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
         );
-
         this.tokenizer.advance();
+
         // handle additional parameters (optional)
         while (this.tokenizer.tokenType() == TokenType.SYMBOL && this.tokenizer.symbol().equals(",")) {
             // write comma
             writer.write(
                 String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
             );
+            this.tokenizer.advance();
 
             // write type
             writer.write(
                 String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
             );
+            this.tokenizer.advance();
 
             // write var name
-            this.tokenizer.advance();
             writer.write(
                 String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
             );
-
             this.tokenizer.advance();
         }
 
@@ -199,19 +211,17 @@ public class CompilationEngine {
         writer.write("<subroutineBody>\n");
 
         // open curly brace
-        this.tokenizer.advance();
         writer.write(
             String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
         );
+        this.tokenizer.advance();
 
         // zero or more var dec
-        this.tokenizer.advance();
         while (
             this.tokenizer.tokenType() == TokenType.KEYWORD &&
             this.tokenizer.keyWord().equals("var")
         ) {
             compileVarDec();
-            this.tokenizer.advance();
         }
 
         // statements
@@ -221,6 +231,7 @@ public class CompilationEngine {
         writer.write(
             String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
         );
+        this.tokenizer.advance();
 
         writer.write("</subroutineBody>\n");
     }
@@ -232,33 +243,32 @@ public class CompilationEngine {
         writer.write(
             String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
         );
+        this.tokenizer.advance();
 
         // write type
-        this.tokenizer.advance();
         writer.write(
             String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
         );
+        this.tokenizer.advance();
 
         // write var name
-        this.tokenizer.advance();
         writer.write(
             String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
         );
-
         this.tokenizer.advance();
+
         // handle additional var names
         while (this.tokenizer.tokenType() == TokenType.SYMBOL && this.tokenizer.symbol().equals(",")) {
             // write comma
             writer.write(
                 String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
             );
+            this.tokenizer.advance();
 
             // write next var name
-            this.tokenizer.advance();
             writer.write(
                 String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
             );
-
             this.tokenizer.advance();
         }
 
@@ -266,7 +276,7 @@ public class CompilationEngine {
         writer.write(
             String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
         );
-
+        this.tokenizer.advance();
         writer.write("</varDec>\n");
     }
 
@@ -281,19 +291,14 @@ public class CompilationEngine {
                 break;
             } else if (this.tokenizer.keyWord().equals("let")) {
                 compileLet();
-                this.tokenizer.advance();
             } else if (this.tokenizer.keyWord().equals("if")) {
                 compileIf();
-                this.tokenizer.advance();
             } else if (this.tokenizer.keyWord().equals("while")) {
                 compileWhile();
-                this.tokenizer.advance();
             } else if (this.tokenizer.keyWord().equals("do")) {
                 compileDo();
-                this.tokenizer.advance();
             } else if (this.tokenizer.keyWord().equals("return")) {
                 compileReturn();
-                this.tokenizer.advance();
             } else {
                 break;
             }
@@ -333,7 +338,6 @@ public class CompilationEngine {
             writer.write("<expressionList>\n</expressionList>\n");
         } else {
             compileExpressionList();
-            this.tokenizer.advance();
         }
 
         // write close parenthesis  
@@ -342,7 +346,8 @@ public class CompilationEngine {
 
         // semicolon
         writer.write(String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol()));
-       
+        this.tokenizer.advance();
+
         writer.write("</doStatement>\n");
     }
 
@@ -363,7 +368,6 @@ public class CompilationEngine {
             this.tokenizer.advance();
             
             compileExpression();
-            this.tokenizer.advance();
 
             writer.write("    <symbol> ] </symbol>\n");
             this.tokenizer.advance();
@@ -375,10 +379,10 @@ public class CompilationEngine {
 
         // expression
         compileExpression();
-        this.tokenizer.advance();
 
         // semicolon
         writer.write("    <symbol> ; </symbol>\n");
+        this.tokenizer.advance();
         
         writer.write("</letStatement>\n");
     }
@@ -399,6 +403,8 @@ public class CompilationEngine {
         
         // semicolon 
         writer.write("    <symbol> ; </symbol>\n");
+        this.tokenizer.advance();
+
         writer.write("</returnStatement>\n");
     }
 
@@ -410,42 +416,56 @@ public class CompilationEngine {
         this.tokenizer.advance();
 
         // open parenthesis
-        writer.write("    <symbol> ( </symbol>\n");
+        writer.write(
+            String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+        );
         this.tokenizer.advance();
 
         // expression
         compileExpression();
-        this.tokenizer.advance();
 
         // close parenthesis
-        writer.write("    <symbol> ) </symbol>\n");
+        writer.write(
+            String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+        );
         this.tokenizer.advance();
 
         // open curly brace
-        writer.write("    <symbol> { </symbol>\n");
+        writer.write(
+            String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+        );
         this.tokenizer.advance();
 
         // statements
         compileStatements();
 
         // close curly brace
-        writer.write("    <symbol> } </symbol>\n");
+        writer.write(
+            String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+        );
         this.tokenizer.advance();
 
-        // keyword else 
-        writer.write(String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord()));
-        this.tokenizer.advance();
-        
-        // open curly brace
-        writer.write("    <symbol> { </symbol>\n");
-        this.tokenizer.advance();
+        // the else clause is optional
+        if (this.tokenizer.tokenType() == TokenType.KEYWORD && this.tokenizer.keyWord().equals("else")) {
+            // keyword else 
+            writer.write(String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord()));
+            this.tokenizer.advance();
+            
+            // open curly brace
+            writer.write(
+                String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+            );
+            this.tokenizer.advance();
 
-        // statements
-        compileStatements();
-        
-        // close curly brace
-        writer.write("    <symbol> } </symbol>\n");
-        this.tokenizer.advance();
+            // statements
+            compileStatements();
+            
+            // close curly brace
+            writer.write(
+                String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+            );
+            this.tokenizer.advance();
+        }
 
         writer.write("</ifStatement>\n");
     }
@@ -457,7 +477,7 @@ public class CompilationEngine {
         writer.write(
             String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
         );
-        
+        this.tokenizer.advance();
     }
 
     private void compileTerm() {

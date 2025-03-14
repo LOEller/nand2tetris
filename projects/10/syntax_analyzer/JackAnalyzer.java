@@ -5,6 +5,9 @@ import java.io.IOException;
 public class JackAnalyzer {
 
     private static void compileFile(String filename) throws IOException {
+
+        System.out.println("Compiling file: " + filename);
+
         JackTokenizer tokenizer = new JackTokenizer(filename);
 
         String outputFile = String.format("%s_comp.xml", filename.split("\\.")[0]);
