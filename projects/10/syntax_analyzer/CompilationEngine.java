@@ -56,6 +56,7 @@ public class CompilationEngine {
         ) {
             // process as many subroutines as needed
             compileSubroutine();
+            this.tokenizer.advance();
         }
 
         // finally a close curly brace
@@ -327,7 +328,10 @@ public class CompilationEngine {
         this.tokenizer.advance();
 
         // compile expression list unless the next token is a close parenthesis
-        if (this.tokenizer.tokenType() != TokenType.SYMBOL && !this.tokenizer.symbol().equals(")")) {
+        if (this.tokenizer.tokenType() == TokenType.SYMBOL && this.tokenizer.symbol().equals(")")) {
+            // write an empty expression list
+            writer.write("<expressionList>\n</expressionList>\n");
+        } else {
             compileExpressionList();
             this.tokenizer.advance();
         }
@@ -398,8 +402,52 @@ public class CompilationEngine {
         writer.write("</returnStatement>\n");
     }
 
-    private void compileIf() {
+    private void compileIf() throws IOException {
+        writer.write("<ifStatement>\n");
+
+        // keyword if
+        writer.write(String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord()));
+        this.tokenizer.advance();
+
+        // open parenthesis
+        writer.write("    <symbol> ( </symbol>\n");
+        this.tokenizer.advance();
+
+        // expression
+        compileExpression();
+        this.tokenizer.advance();
+
+        // close parenthesis
+        writer.write("    <symbol> ) </symbol>\n");
+        this.tokenizer.advance();
+
+        // open curly brace
+        writer.write("    <symbol> { </symbol>\n");
+        this.tokenizer.advance();
+
+        // statements
+        compileStatements();
+
+        // close curly brace
+        writer.write("    <symbol> } </symbol>\n");
+        this.tokenizer.advance();
+
+        // keyword else 
+        writer.write(String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord()));
+        this.tokenizer.advance();
         
+        // open curly brace
+        writer.write("    <symbol> { </symbol>\n");
+        this.tokenizer.advance();
+
+        // statements
+        compileStatements();
+        
+        // close curly brace
+        writer.write("    <symbol> } </symbol>\n");
+        this.tokenizer.advance();
+
+        writer.write("</ifStatement>\n");
     }
 
     private void compileExpression() throws IOException {
