@@ -94,13 +94,19 @@ public class CompilationEngine {
         );
         this.tokenizer.advance();
 
-        // write the type (another keyword)
-        writer.write(
-            String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
-        );
+        // note that type can be either a keyword or an identifier (custom class)
+        if (this.tokenizer.tokenType() == TokenType.KEYWORD) {
+            writer.write(
+                String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
+            );
+        } else {
+            writer.write(
+                String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
+            );
+        }
         this.tokenizer.advance();
 
-        // write the var name identifier
+        // varname
         writer.write(
             String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
         );
@@ -136,10 +142,16 @@ public class CompilationEngine {
         );
         this.tokenizer.advance();
 
-        // write the type keyword
-        writer.write(
-            String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
-        );
+        // note that type can be either a keyword or an identifier (custom class)
+        if (this.tokenizer.tokenType() == TokenType.KEYWORD) {
+            writer.write(
+                String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
+            );
+        } else {
+            writer.write(
+                String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
+            );
+        }
         this.tokenizer.advance();
 
         // write the identifier for subroutine names
@@ -252,9 +264,16 @@ public class CompilationEngine {
         this.tokenizer.advance();
 
         // write type
-        writer.write(
-            String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
-        );
+        // NOTE that type can be either a keyword or an identifier (custom class)
+        if (this.tokenizer.tokenType() == TokenType.KEYWORD) {
+            writer.write(
+                String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
+            );
+        } else {
+            writer.write(
+                String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
+            );
+        }
         this.tokenizer.advance();
 
         // write var name
