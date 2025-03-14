@@ -9,12 +9,14 @@ public class CompilationEngine {
     FileWriter writer;
     JackTokenizer tokenizer;
     List<String> operators;
-
+    List<String> unaryOperators;
+    
     public CompilationEngine(JackTokenizer tokenizer, String outputFile) throws IOException {
         writer = new FileWriter(outputFile);
         this.tokenizer = tokenizer;
         this.tokenizer.advance(); // advance to the first token
-        this.operators = Arrays.asList("+", "-", "*", "/", "&", "|", "<", ">", "=");
+        this.operators = Arrays.asList("+", "-", "*", "/", "&amp;", "|", "&lt;", "&gt;", "=");
+        this.unaryOperators = Arrays.asList("-", "~");
     }
 
     public void closeWriter() throws IOException {
@@ -636,7 +638,7 @@ public class CompilationEngine {
             this.tokenizer.advance();
         }
         // unaryOp term
-        else if (this.tokenizer.tokenType() == TokenType.SYMBOL && this.operators.contains(this.tokenizer.symbol())) {
+        else if (this.tokenizer.tokenType() == TokenType.SYMBOL && this.unaryOperators.contains(this.tokenizer.symbol())) {
             writer.write(
                 String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
             );
