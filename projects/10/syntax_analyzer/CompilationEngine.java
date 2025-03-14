@@ -2,15 +2,19 @@ package syntax_analyzer;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class CompilationEngine {
     FileWriter writer;
     JackTokenizer tokenizer;
+    List<String> operators;
 
     public CompilationEngine(JackTokenizer tokenizer, String outputFile) throws IOException {
         writer = new FileWriter(outputFile);
         this.tokenizer = tokenizer;
         this.tokenizer.advance(); // advance to the first token
+        this.operators = Arrays.asList("+", "-", "*", "/", "&", "|", "<", ">", "=");
     }
 
     public void closeWriter() throws IOException {
@@ -28,6 +32,8 @@ public class CompilationEngine {
     // advance the tokenizer immediately after the write. Calling another 
     // compile method DOES NOT require an additional advance after invoking
     // the method.
+
+    // This is known as the "predictive parsing" pattern in recursive descent parsing.
 
     public void compileClass() throws IOException {
         writer.write("<class>\n");
@@ -387,8 +393,36 @@ public class CompilationEngine {
         writer.write("</letStatement>\n");
     }
 
-    private void compileWhile() {
-        // 'while' '(' expression ')' '{' statements '}'
+    private void compileWhile() throws IOException {
+        writer.write("<whileStatement>\n");
+
+        // keyword while
+        writer.write(String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord()));
+        this.tokenizer.advance();
+
+        // open paren
+        writer.write(String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol()));
+        this.tokenizer.advance();
+
+        // expression
+        compileExpression();
+
+        // close paren
+        writer.write(String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol()));
+        this.tokenizer.advance();
+
+        // open curly brace
+        writer.write(String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol()));
+        this.tokenizer.advance();
+
+        // statements
+        compileStatements();
+
+        // close curly brace
+        writer.write(String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol()));
+        this.tokenizer.advance();
+
+        writer.write("</whileStatement>\n");
     }
 
     private void compileReturn() throws IOException{
@@ -399,11 +433,14 @@ public class CompilationEngine {
         this.tokenizer.advance();
 
         // zero or one of expression 
-        // TODO for now let's assume there's no expression
-        
-        // semicolon 
-        writer.write("    <symbol> ; </symbol>\n");
-        this.tokenizer.advance();
+        if (this.tokenizer.tokenType() == TokenType.SYMBOL && this.tokenizer.symbol().equals(";")) {
+            writer.write("    <symbol> ; </symbol>\n");
+            this.tokenizer.advance();
+        } else {
+            compileExpression();
+            writer.write("    <symbol> ; </symbol>\n");
+            this.tokenizer.advance();
+        }
 
         writer.write("</returnStatement>\n");
     }
@@ -471,21 +508,141 @@ public class CompilationEngine {
     }
 
     private void compileExpression() throws IOException {
-        // for initial version, all expressions 
-        // are replaced by a single identifier
+        writer.write("<expression>\n");
 
-        writer.write(
-            String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
-        );
-        this.tokenizer.advance();
+        compileTerm();
+
+        while (this.tokenizer.tokenType() == TokenType.SYMBOL && this.operators.contains(this.tokenizer.symbol())) {
+            writer.write(
+                String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+            );
+            this.tokenizer.advance();
+
+            compileTerm();
+        }
+
+        writer.write("</expression>\n");
     }
 
-    private void compileTerm() {
-        
+    private void compileTerm() throws IOException {
+        writer.write("<term>\n");
+
+        // integerConstant
+        if (this.tokenizer.tokenType() == TokenType.INT_CONST) {
+            writer.write(
+                String.format("    <integerConstant> %s </integerConstant>\n", this.tokenizer.intVal())
+            );
+            this.tokenizer.advance();
+        // stringConstant
+        } else if (this.tokenizer.tokenType() == TokenType.STRING_CONST) {
+            writer.write(
+                String.format("    <stringConstant> %s </stringConstant>\n", this.tokenizer.stringVal())
+            );
+            this.tokenizer.advance();
+        // keywordConstant
+        } else if (this.tokenizer.tokenType() == TokenType.KEYWORD) {
+            writer.write(
+                String.format("    <keyword> %s </keyword>\n", this.tokenizer.keyWord())
+            );
+            this.tokenizer.advance();
+        // varName | varName[] | subroutineCall
+        // (each of these starts with an identifier)
+        } else if (this.tokenizer.tokenType() == TokenType.IDENTIFIER) {    
+            String savedIdentifier = this.tokenizer.identifier();
+            this.tokenizer.advance();
+            
+            // Look ahead at next token to determine what kind of term this is
+            if (this.tokenizer.tokenType() == TokenType.SYMBOL) {
+                if (this.tokenizer.symbol().equals("[")) {  // array access
+                    // Write the array name
+                    writer.write(
+                        String.format("    <identifier> %s </identifier>\n", savedIdentifier)
+                    );
+                    writer.write("    <symbol> [ </symbol>\n");
+                    this.tokenizer.advance();
+
+                    compileExpression();
+
+                    writer.write("    <symbol> ] </symbol>\n");
+                    this.tokenizer.advance();
+                } else if (this.tokenizer.symbol().equals("(") || this.tokenizer.symbol().equals(".")) {  // subroutine call
+                    // Write the initial identifier (class/var name or subroutine name)
+                    writer.write(
+                        String.format("    <identifier> %s </identifier>\n", savedIdentifier)
+                    );
+
+                    if (this.tokenizer.symbol().equals(".")) {  // class/var name followed by .subroutineName
+                        writer.write("    <symbol> . </symbol>\n");
+                        this.tokenizer.advance();
+
+                        // Write subroutine name
+                        writer.write(
+                            String.format("    <identifier> %s </identifier>\n", this.tokenizer.identifier())
+                        );
+                        this.tokenizer.advance();
+                    }
+
+                    // Write open paren
+                    writer.write("    <symbol> ( </symbol>\n");
+                    this.tokenizer.advance();
+
+                    // Handle expression list
+                    if (this.tokenizer.tokenType() == TokenType.SYMBOL && this.tokenizer.symbol().equals(")")) {
+                        writer.write("<expressionList>\n</expressionList>\n");
+                    } else {
+                        compileExpressionList();
+                    }
+
+                    // Write close paren
+                    writer.write("    <symbol> ) </symbol>\n");
+                    this.tokenizer.advance();
+                } else {  // just a variable name
+                    writer.write(
+                        String.format("    <identifier> %s </identifier>\n", savedIdentifier)
+                    );
+                }
+            } else {  // just a variable name
+                writer.write(
+                    String.format("    <identifier> %s </identifier>\n", savedIdentifier)
+                );
+            }
+        // '(' expression ')'
+        } else if (this.tokenizer.tokenType() == TokenType.SYMBOL && this.tokenizer.symbol().equals("(")) {
+            writer.write("    <symbol> ( </symbol>\n");
+            this.tokenizer.advance();
+
+            compileExpression();
+
+            writer.write("    <symbol> ) </symbol>\n");
+            this.tokenizer.advance();
+        }
+        // unaryOp term
+        else if (this.tokenizer.tokenType() == TokenType.SYMBOL && this.operators.contains(this.tokenizer.symbol())) {
+            writer.write(
+                String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+            );
+            this.tokenizer.advance();
+
+            compileTerm();
+        }
+
+        writer.write("</term>\n");
     }
 
     private void compileExpressionList() throws IOException {
         writer.write("<expressionList>\n");
+
+        compileExpression();
+
+        // zero or more of ', expression'
+        while (this.tokenizer.tokenType() == TokenType.SYMBOL && this.tokenizer.symbol().equals(",")) {
+            writer.write(
+                String.format("    <symbol> %s </symbol>\n", this.tokenizer.symbol())
+            );
+            this.tokenizer.advance();
+
+            compileExpression();
+        }
 
         writer.write("</expressionList>\n");
     }
