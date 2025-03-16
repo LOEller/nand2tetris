@@ -11,12 +11,12 @@ import java.util.HashSet;
 
 public class JackTokenizer {
 
-    List<String> tokens = new ArrayList<String>();
-    int tokenIndex = -1;
-    Set<Character> symbols = new HashSet<>(
+    private final List<String> tokens = new ArrayList<String>();
+    private int tokenIndex = -1;
+    private static final Set<Character> SYMBOLS = new HashSet<>(
         Arrays.asList(',', ';', '[', ']', '{', '}', '-', '+', '<', '>', '=', '(', ')', '|', '&', '/', '~', '*', '.'
     ));
-    Set<String> keywords = new HashSet<>(
+    private static final Set<String> KEYWORDS = new HashSet<>(
         Arrays.asList(
             "class", "method", "function", "constructor", "int", "boolean", "char", "void", "var", "static", "field", "let", "do", "if", "else", "while", "return", "true", "false", "null", "this"
         )
@@ -81,7 +81,6 @@ public class JackTokenizer {
                     // this is the end of the string
                     inString = false;
                     token += line.charAt(i);
-                    //tokens.add(token);
                 } else {
                     // this is the start of a string
                     token += line.charAt(i);
@@ -96,7 +95,7 @@ public class JackTokenizer {
                     tokens.add(token);
                 }
                 token = "";
-            } else if (symbols.contains(line.charAt(i))) {
+            } else if (SYMBOLS.contains(line.charAt(i))) {
                 // current char is a symbol
                 if (!token.isEmpty()) {
                     tokens.add(token);
@@ -125,10 +124,10 @@ public class JackTokenizer {
     }
 
     public TokenType tokenType() {
-        if (currentToken().length() == 1 && symbols.contains(currentToken().charAt(0))) {
+        if (currentToken().length() == 1 && SYMBOLS.contains(currentToken().charAt(0))) {
             return TokenType.SYMBOL;
         } 
-        if (keywords.contains(currentToken())) {
+        if (KEYWORDS.contains(currentToken())) {
             return TokenType.KEYWORD;
         } 
         if (currentToken().startsWith("\"")) {

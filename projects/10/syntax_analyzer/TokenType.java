@@ -1,6 +1,6 @@
 package syntax_analyzer;
 
-enum TokenType {
+public enum TokenType {
    KEYWORD,
    SYMBOL,
    IDENTIFIER,
